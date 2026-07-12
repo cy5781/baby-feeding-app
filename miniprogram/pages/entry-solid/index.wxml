@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="section-title">辅食内容</view>
+  <view class="chip-row" style="margin-bottom: 28rpx;">
+    <text
+      wx:for="{{presets}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-val="{{item.value}}"
+      bindtap="pick"
+    >{{item.value}}</text>
+  </view>
+  <input
+    class="note-input"
+    placeholder="或输入其他辅食名称"
+    value="{{solidItem}}"
+    bindinput="onSolidItem"
+  />
+
+  <view class="section-title" style="margin-top: 32rpx;">份量</view>
+  <view class="chip-row" style="margin-bottom: 36rpx;">
+    <text
+      wx:for="{{portions}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-val="{{item.value}}"
+      bindtap="pickPortion"
+    >{{item.value}}</text>
+  </view>
+
+  <view class="section-title">备注（选填）</view>
+  <input
+    class="note-input"
+    placeholder="例如：加了少许"
+    value="{{note}}"
+    bindinput="onNote"
+  />
+
+  <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>
+</view>

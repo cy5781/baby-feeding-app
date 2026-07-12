@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="section-title">类型</view>
+  <view class="chip-row" style="margin-bottom: 28rpx;">
+    <text
+      wx:for="{{types}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-val="{{item.value}}"
+      bindtap="pickType"
+    >{{item.value}}</text>
+  </view>
+
+  <view class="section-title">颜色</view>
+  <view class="chip-row" style="margin-bottom: 36rpx;">
+    <text
+      wx:for="{{colors}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-val="{{item.value}}"
+      bindtap="pickColor"
+    >{{item.value}}</text>
+  </view>
+
+  <view class="section-title">备注（选填）</view>
+  <input
+    class="note-input"
+    placeholder="例如：有点稀"
+    value="{{note}}"
+    bindinput="onNote"
+  />
+
+  <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>
+</view>

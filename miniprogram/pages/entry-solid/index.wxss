@@ -1,0 +1,10 @@
+.note-input {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8rpx;
+}

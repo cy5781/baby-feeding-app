@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="section-title">奶量（ml）</view>
+  <view class="chip-row" style="margin-bottom: 28rpx;">
+    <text
+      wx:for="{{quick}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-val="{{item.value}}"
+      bindtap="pick"
+    >{{item.value}}ml</text>
+  </view>
+
+  <view style="display:flex; align-items:center; gap: 20rpx; margin-bottom: 36rpx;">
+    <button class="btn" style="width:100rpx; font-size:40rpx; padding:20rpx;" data-delta="-10" bindtap="step">−</button>
+    <view style="flex:1; text-align:center;">
+      <input
+        type="number"
+        style="font-size: 56rpx; font-weight: 800; text-align: center; width: 100%; color: #E3A857;"
+        value="{{amount}}"
+        bindinput="onAmount"
+      />
+      <view style="font-size:24rpx; color:#7E9078;">毫升</view>
+    </view>
+    <button class="btn" style="width:100rpx; font-size:40rpx; padding:20rpx;" data-delta="10" bindtap="step">+</button>
+  </view>
+
+  <view class="section-title">备注（选填）</view>
+  <input
+    class="note-input"
+    placeholder="例如：加了D3"
+    value="{{note}}"
+    bindinput="onNote"
+  />
+
+  <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>
+</view>

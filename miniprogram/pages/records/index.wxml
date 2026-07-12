@@ -1,0 +1,50 @@
+<view class="container">
+  <!-- Day navigation -->
+  <view style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 28rpx;">
+    <button class="btn" style="width:80rpx; height:80rpx; border-radius:50%; padding:0; font-size:36rpx; line-height:80rpx;" bindtap="prevDay">‹</button>
+    <view style="text-align:center;" bindtap="onDatePicker">
+      <view style="font-size: 32rpx; font-weight: 700;">{{monthDay}}</view>
+      <view style="font-size: 24rpx; color: #7E9078;">{{weekday}}</view>
+    </view>
+    <button class="btn" style="width:80rpx; height:80rpx; border-radius:50%; padding:0; font-size:36rpx; line-height:80rpx;" bindtap="nextDay">›</button>
+  </view>
+
+  <!-- Log table -->
+  <view class="log-table" wx:if="{{items.length > 0}}">
+    <view
+      wx:for="{{items}}"
+      wx:key="_id"
+      class="row"
+    >
+      <view class="time-col">{{item.time}}</view>
+      <view class="desc-col">{{item.desc}}</view>
+      <view class="val-col" wx:if="{{item.amount}}">{{item.amount}}</view>
+      <view wx:else></view>
+      <view class="tag-col" wx:if="{{item.tag}}">{{item.tag}}</view>
+      <view wx:else></view>
+      <button
+        style="border:none; background:none; color:#7E9078; font-size:32rpx; padding:0 4rpx;"
+        data-id="{{item._id}}"
+        bindtap="onDelete"
+      >···</button>
+    </view>
+  </view>
+
+  <view class="empty" wx:else>这一天还没有记录</view>
+
+  <!-- Daily summary -->
+  <view wx:if="{{summaryMilkCount > 0 || summarySolidCount > 0}}" style="margin-top: 36rpx;">
+    <view class="section-title">当日小结</view>
+    <view class="last-feed-card">
+      <view style="font-size: 44rpx;">📊</view>
+      <view>
+        <view style="font-size: 24rpx; opacity: 0.85;">总奶量</view>
+        <view style="font-size: 34rpx; font-weight: 700;">{{summaryMilkTotal}}ml · {{summaryMilkCount}}次</view>
+        <view style="font-size: 24rpx; opacity: 0.7; margin-top: 4rpx;" wx:if="{{summarySolidCount > 0}}">辅食 {{summarySolidCount}}次 · 便便 {{summaryPoopCount}}次</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Hidden date picker triggered by tapping date -->
+  <picker mode="date" value="{{dateKey}}" bindchange="onDatePickerChange" style="display:none;"></picker>
+</view>

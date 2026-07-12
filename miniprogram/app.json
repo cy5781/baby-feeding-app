@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/today/index",
+    "pages/stats/index",
+    "pages/records/index",
+    "pages/me/index",
+    "pages/entry-milk/index",
+    "pages/entry-solid/index",
+    "pages/entry-med/index",
+    "pages/entry-poop/index",
+    "pages/voice/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "宝宝喂养记录",
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#F5FAF3",
+    "backgroundColor": "#F5FAF3",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#7E9078",
+    "selectedColor": "#4F9668",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/today/index",
+        "text": "今日"
+      },
+      {
+        "pagePath": "pages/stats/index",
+        "text": "统计"
+      },
+      {
+        "pagePath": "pages/records/index",
+        "text": "记录"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  }
+}

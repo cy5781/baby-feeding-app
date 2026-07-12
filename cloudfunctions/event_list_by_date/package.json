@@ -1,0 +1,6 @@
+{
+  "name": "event_list_by_date",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": { "wx-server-sdk": "latest" }
+}

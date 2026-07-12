@@ -1,0 +1,32 @@
+<view class="container">
+  <!-- Family code card -->
+  <view class="card" style="text-align:center; margin-bottom: 32rpx;">
+    <view style="font-size: 24rpx; color: #7E9078; margin-bottom: 8rpx;">家庭共享码</view>
+    <view wx:if="{{joinCode}}" style="font-size: 52rpx; font-weight: 900; letter-spacing: 12rpx; color: #4F9668; font-family: monospace;">{{joinCode}}</view>
+    <view wx:else style="font-size: 28rpx; color: #7E9078;">尚未创建</view>
+    <view style="font-size: 24rpx; color: #7E9078; margin-top: 12rpx;">让家人输入此码，共享喂养记录</view>
+  </view>
+
+  <!-- Actions -->
+  <button class="btn btn-primary" style="width:100%; margin-bottom: 20rpx;" bindtap="createFamily">
+    {{createBtnText}}
+  </button>
+
+  <button class="btn" style="width:100%; margin-bottom: 32rpx;" bindtap="openJoin">
+    加入家人的家庭码
+  </button>
+
+  <!-- Data info -->
+  <view class="card" style="margin-bottom: 32rpx;">
+    <view style="font-size: 26rpx; color: #7E9078; line-height: 1.8;">
+      <view>📋 数据集合：families / family_members / events</view>
+      <view>🔑 家庭码可分享给家人，共同记录</view>
+      <view>🗑️ 清空数据仅删除记录，不影响家庭码</view>
+    </view>
+  </view>
+
+  <!-- Danger zone -->
+  <button class="btn btn-danger" style="width:100%;" bindtap="clearData">
+    ⚠️ 清空全部记录
+  </button>
+</view>

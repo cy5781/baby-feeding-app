@@ -1,0 +1,256 @@
+/* Last-feed card */
+.last-feed-card {
+  background: #4F9668;
+  color: #fff;
+  border-radius: 28rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  box-shadow: 0 6px 18px rgba(51,66,46,0.15);
+  margin-bottom: 32rpx;
+}
+.last-feed-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 22rpx;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  flex-shrink: 0;
+}
+.last-feed-label {
+  font-size: 24rpx;
+  opacity: 0.85;
+}
+.last-feed-value {
+  font-size: 34rpx;
+  font-weight: 700;
+  margin-top: 4rpx;
+}
+.last-feed-progress {
+  margin-top: 12rpx;
+  height: 8rpx;
+  width: 100%;
+  background: rgba(255,255,255,0.2);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+.last-feed-progress-bar {
+  height: 100%;
+  background: #E3A857;
+  border-radius: 4rpx;
+  transition: width 0.6s ease;
+}
+
+/* Quick action grid */
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-bottom: 32rpx;
+}
+
+.quick-btn {
+  width: 100%;
+  border: none;
+  border-radius: 28rpx;
+  padding: 36rpx 20rpx;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(51,66,46,0.08);
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14rpx;
+}
+.quick-btn:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
+.quick-icon {
+  font-size: 48rpx;
+  display: block;
+}
+
+.quick-label {
+  font-size: 30rpx;
+  font-weight: 700;
+  display: block;
+}
+
+.quick-feed {
+  background: #FBEBD2;
+  color: #8A5A16;
+}
+.quick-poop {
+  background: #EDE4D6;
+  color: #6B4A28;
+}
+.quick-solid {
+  background: #EDE4D6;
+  color: #6B4A28;
+}
+.quick-med {
+  background: #DCEEE9;
+  color: #2C6B5C;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 28rpx;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 9rpx;
+  top: 8rpx;
+  bottom: 8rpx;
+  width: 3rpx;
+  background: repeating-linear-gradient(
+    #D3E6CB 0rpx, #D3E6CB 12rpx,
+    transparent 12rpx, transparent 20rpx
+  );
+}
+.t-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16rpx 0;
+}
+.t-item::before {
+  content: "";
+  position: absolute;
+  left: -28rpx;
+  top: 22rpx;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  border: 3rpx solid #F5FAF3;
+}
+.t-item.milk::before { background: #E3A857; }
+.t-item.solid::before { background: #A9784A; }
+.t-item.poop::before { background: #A9784A; }
+.t-item.med::before { background: #3F8F7A; }
+.t-item.sleep::before { background: #4F9668; }
+
+.t-time {
+  font-size: 24rpx;
+  color: #7E9078;
+  display: block;
+  margin-bottom: 4rpx;
+}
+.t-main {
+  font-size: 28rpx;
+  color: #33422E;
+}
+.t-more {
+  border: none;
+  background: none;
+  color: #7E9078;
+  font-size: 36rpx;
+  padding: 0 8rpx;
+  line-height: 1;
+}
+
+/* Filter chips scroll */
+.filter-scroll {
+  white-space: nowrap;
+  margin-bottom: 16rpx;
+}
+.filter-chip {
+  display: inline-block;
+  padding: 14rpx 28rpx;
+  border-radius: 28rpx;
+  border: 2rpx solid #D3E6CB;
+  background: #fff;
+  font-size: 26rpx;
+  color: #7E9078;
+  font-weight: 600;
+  margin-right: 12rpx;
+}
+.filter-chip.active {
+  background: #4F9668;
+  color: #fff;
+  border-color: #4F9668;
+}
+
+/* Mic dock */
+.mic-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(0deg, #F5FAF3 60%, transparent);
+  z-index: 10;
+}
+.mic-btn {
+  width: 100%;
+  border: none;
+  border-radius: 56rpx;
+  background: #4F9668;
+  color: #fff;
+  padding: 28rpx;
+  font-size: 32rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  box-shadow: 0 8px 28px rgba(79,150,104,0.4);
+}
+.mic-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #E38A72;
+  animation: mic-pulse 1.4s infinite;
+}
+@keyframes mic-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+}
+
+/* Extra bottom space for mic dock */
+.page-bottom {
+  height: 180rpx;
+}
+
+/* Date bar */
+.date-bar {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 26rpx;
+  color: #7E9078;
+  margin-bottom: 20rpx;
+}
+.date-bar .dot-sep {
+  color: #D3E6CB;
+}
+
+/* Summary grid — 2x2 even chips */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.summary-chip {
+  background: #ffffff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 20rpx 18rpx;
+  font-weight: 700;
+  color: #33422E;
+  font-size: 26rpx;
+  text-align: center;
+}
+

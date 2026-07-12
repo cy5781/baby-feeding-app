@@ -1,0 +1,51 @@
+<view class="container">
+  <view class="card" style="text-align:center; padding: 48rpx 28rpx;">
+
+    <!-- Input area -->
+    <view style="font-size: 28rpx; color: #7E9078; margin-bottom: 20rpx;">
+      输入一句话，自动识别记录类型
+    </view>
+
+    <textarea
+      style="background:#F5FAF3; border-radius:20rpx; padding:24rpx; width:100%; box-sizing:border-box; font-size:30rpx; min-height:120rpx;"
+      placeholder="例如：喝了一百四十五毫升奶粉，加了D3"
+      value="{{text}}"
+      bindinput="onText"
+      auto-height
+    />
+
+    <button
+      class="btn btn-primary"
+      style="width:100%; margin-top: 28rpx;"
+      bindtap="parse"
+      disabled="{{parsing}}"
+    >{{parseBtnText}}</button>
+
+    <!-- Voice record button (stub) -->
+    <button
+      class="btn btn-dark"
+      style="width:100%; margin-top: 16rpx;"
+      bindtap="stubVoice"
+    >🎤 按住说话（即将支持）</button>
+  </view>
+
+  <!-- Parse result -->
+  <view wx:if="{{parsed.type}}" style="margin-top: 32rpx;">
+    <view style="font-size: 24rpx; color: #7E9078; margin-bottom: 12rpx;">{{voiceHint || '识别结果，请确认'}}</view>
+    <view class="voice-result-card">
+      <view class="big">{{resultDesc}}</view>
+      <view class="small" wx:if="{{parsed.note}}">备注：{{parsed.note}}</view>
+      <view class="small" wx:else>识别时间 刚刚</view>
+    </view>
+
+    <view style="display:flex; gap: 16rpx;">
+      <button class="btn" style="flex:1; background:#EFE3D0; color:#6B4A28; border-color:#EFE3D0;" bindtap="clearResult">重新输入</button>
+      <button class="btn btn-primary" style="flex:1;" bindtap="save">确认保存</button>
+    </view>
+  </view>
+
+  <!-- Unknown parse result -->
+  <view wx:if="{{parsed.type === 'unknown'}}" style="margin-top: 32rpx; text-align:center;">
+    <view class="empty">未能识别记录类型，请换个说法再试</view>
+  </view>
+</view>

@@ -1,0 +1,320 @@
+/* ===== Design Tokens (spec §3.1) ===== */
+page {
+  --paper: #F5FAF3;
+  --paper-line: #D3E6CB;
+  --ink: #33422E;
+  --ink-soft: #7E9078;
+  --primary: #4F9668;
+  --primary-soft: #DCEFDA;
+  --accent: #E3A857;
+  --accent-soft: #FBEBD2;
+  --success: #3F8F7A;
+  --success-soft: #DCEEE9;
+  --warn: #E38A72;
+  --warn-soft: #FBE2DA;
+  --radius-card: 20px;
+  --shadow-card: 0 6px 18px rgba(51,66,46,0.08);
+
+  background: #F5FAF3;
+  color: #33422E;
+  font-size: 16px;
+  font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+  line-height: 1.5;
+}
+
+/* ===== Utilities ===== */
+.container {
+  padding: 16rpx 24rpx 32rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 32rpx 28rpx;
+  box-shadow: 0 6px 18px rgba(51,66,46,0.08);
+}
+
+.section {
+  margin-top: 32rpx;
+}
+
+.section-title {
+  color: #7E9078;
+  font-weight: 700;
+  font-size: 26rpx;
+  padding: 0 8rpx;
+  margin-bottom: 16rpx;
+}
+
+/* ===== Grid ===== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  border-radius: 28rpx;
+  font-weight: 800;
+  font-size: 34rpx;
+  padding: 26rpx 18rpx;
+  border: 1px solid #D3E6CB;
+  background: #ffffff;
+  color: #33422E;
+  line-height: 1.2;
+}
+.btn:active {
+  opacity: 0.92;
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: #4F9668;
+  color: #ffffff;
+  border-color: #4F9668;
+}
+
+.btn-dark {
+  background: #33422E;
+  color: #ffffff;
+  border-color: #33422E;
+}
+
+.btn-accent {
+  background: #E3A857;
+  color: #ffffff;
+  border-color: #E3A857;
+}
+
+.btn-danger {
+  background: #E38A72;
+  color: #ffffff;
+  border-color: #E38A72;
+}
+
+/* ===== Chips ===== */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.chip {
+  padding: 16rpx 28rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid #D3E6CB;
+  background: #ffffff;
+  font-weight: 700;
+  color: #33422E;
+  font-size: 28rpx;
+}
+.chip:active {
+  opacity: 0.85;
+}
+
+.chip-active {
+  background: #DCEFDA;
+  border-color: #4F9668;
+  color: #2C6B40;
+}
+
+/* ===== Row / Flex ===== */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+/* ===== Typography ===== */
+.muted {
+  color: #7E9078;
+}
+
+.brand-title {
+  font-family: "Kaiti SC", "STKaiti", "Noto Serif SC", serif;
+  font-size: 48rpx;
+  margin: 20rpx 0 4rpx;
+  letter-spacing: 2rpx;
+  color: #33422E;
+}
+
+/* ===== List items ===== */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.item {
+  background: #ffffff;
+  border: 1px solid #D3E6CB;
+  border-radius: 24rpx;
+  padding: 24rpx;
+}
+.item:active {
+  background: #F5FAF3;
+}
+
+.item-title {
+  font-weight: 800;
+  font-size: 30rpx;
+  color: #33422E;
+}
+
+.item-meta {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #7E9078;
+}
+
+/* ===== Empty state ===== */
+.empty {
+  text-align: center;
+  color: #7E9078;
+  font-size: 28rpx;
+  padding: 48rpx 0;
+}
+
+/* ===== Quick action cards (home grid) ===== */
+.action-card {
+  border-radius: 28rpx;
+  padding: 32rpx 24rpx;
+  text-align: left;
+  box-shadow: 0 6px 18px rgba(51,66,46,0.08);
+  border: none;
+  line-height: 1.3;
+  font-size: 28rpx;
+}
+.action-card:active {
+  transform: scale(0.96);
+}
+.action-card .icon {
+  font-size: 44rpx;
+  display: block;
+  margin-bottom: 16rpx;
+}
+.action-card .name {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+.action-card .hint {
+  font-size: 22rpx;
+  margin-top: 4rpx;
+  opacity: 0.7;
+}
+
+.card-feed {
+  background: #FBEBD2;
+  color: #8A5A16;
+}
+.card-solid {
+  background: #EFE3D0;
+  color: #6B4A28;
+}
+.card-poop {
+  background: #EFE3D0;
+  color: #6B4A28;
+}
+.card-med {
+  background: #DCEEE9;
+  color: #2C6B5C;
+}
+
+/* ===== Overlay / Bottom Sheet ===== */
+.overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(30,26,20,0.45);
+  display: none;
+  align-items: flex-end;
+  z-index: 100;
+}
+.overlay.active { display: flex; }
+
+.sheet {
+  width: 100%;
+  background: #F5FAF3;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 36rpx 32rpx 48rpx;
+}
+
+.time-input {
+  padding: 20rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid #D3E6CB;
+  background: #fff;
+  font-size: 30rpx;
+  text-align: center;
+  color: #33422E;
+}
+
+/* ===== Voice page ===== */
+.voice-wave {
+  display: flex;
+  gap: 8rpx;
+  justify-content: center;
+  align-items: flex-end;
+  height: 80rpx;
+  margin-bottom: 28rpx;
+}
+.voice-wave .bar {
+  width: 10rpx;
+  background: #4F9668;
+  border-radius: 4rpx;
+}
+.voice-result-card {
+  background: #FBEBD2;
+  border-radius: 28rpx;
+  padding: 28rpx;
+  margin-bottom: 28rpx;
+}
+.voice-result-card .big {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #8A5A16;
+}
+.voice-result-card .small {
+  font-size: 24rpx;
+  color: #8A5A16;
+  opacity: 0.75;
+  margin-top: 6rpx;
+}
+
+/* ===== History log table ===== */
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.log-table .row {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 8rpx;
+  border-bottom: 1px dashed #D3E6CB;
+  gap: 12rpx;
+}
+.log-table .time-col {
+  color: #7E9078;
+  font-size: 26rpx;
+  width: 100rpx;
+  flex-shrink: 0;
+}
+.log-table .desc-col {
+  flex: 1;
+  font-size: 28rpx;
+}
+.log-table .val-col {
+  font-weight: 700;
+  color: #4F9668;
+  font-size: 28rpx;
+  white-space: nowrap;
+}
+.log-table .tag-col {
+  font-size: 22rpx;
+  background: #DCEEE9;
+  color: #2C6B5C;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
+  white-space: nowrap;
+}

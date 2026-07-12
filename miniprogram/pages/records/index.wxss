@@ -1,0 +1,10 @@
+.last-feed-card {
+  background: #3F8F7A;
+  color: #fff;
+  border-radius: 28rpx;
+  padding: 28rpx 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  box-shadow: 0 6px 18px rgba(51,66,46,0.15);
+}

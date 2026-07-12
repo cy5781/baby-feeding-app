@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="section-title">药品 / 补充剂</view>
+  <view class="chip-row" style="margin-bottom: 36rpx;">
+    <text
+      wx:for="{{presets}}"
+      wx:key="key"
+      class="{{item.chipClass}}"
+      data-key="{{item.key}}"
+      bindtap="pick"
+    >{{item.label}}</text>
+  </view>
+
+  <view class="section-title">备注（选填）</view>
+  <input
+    class="note-input"
+    placeholder="例如：第一次吃"
+    value="{{note}}"
+    bindinput="onNote"
+  />
+
+  <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>
+</view>
