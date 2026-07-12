@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# WeChat Mini Program - private config (personal dev settings)
+project.private.config.json
+miniprogram/project.private.config.json
+
+# Dependencies
+node_modules/
+cloudfunctions/*/node_modules/
+
+# Claude Code
+.claude/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
