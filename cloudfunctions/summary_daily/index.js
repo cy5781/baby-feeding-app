@@ -3,6 +3,11 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
 const MED_LABELS = { AD: "AD", D3: "D3", DHA: "DHA", CALCIUM: "液体钙" }
+// Reverse map: label → key, for normalization
+const LABEL_TO_KEY = {}
+for (var k in MED_LABELS) {
+  if (MED_LABELS.hasOwnProperty(k)) LABEL_TO_KEY[MED_LABELS[k]] = k
+}
 
 async function requireFamilyId() {
   const { OPENID } = cloud.getWXContext()
@@ -38,8 +43,10 @@ exports.main = async (event) => {
     } else if (e.type === "poop") {
       poopCount += 1
     } else if (e.type === "med") {
-      const key = String(e.medName || "").trim()
-      if (Object.prototype.hasOwnProperty.call(meds, key)) meds[key] = true
+      // Normalize: medName might be a label ("液体钙") instead of key ("CALCIUM")
+      var medKey = String(e.medName || "").trim()
+      if (LABEL_TO_KEY[medKey]) medKey = LABEL_TO_KEY[medKey]
+      if (Object.prototype.hasOwnProperty.call(meds, medKey)) meds[medKey] = true
     }
   }
 

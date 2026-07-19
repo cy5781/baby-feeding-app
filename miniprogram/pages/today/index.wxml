@@ -64,7 +64,6 @@
       data-key="{{item.key}}"
       bindtap="onFilter"
     >{{item.label}}</text>
-    <text class="{{customClass}}" bindtap="onCustomRange">{{customLabel}}</text>
   </scroll-view>
 
   <!-- Timeline list -->
@@ -96,26 +95,3 @@
   </button>
 </view>
 
-<!-- Custom range overlay -->
-<view class="{{rangeOverlayClass}}" bindtap="closeRange">
-  <view class="sheet" catchtap="">
-    <view style="font-size: 34rpx; font-weight: 700; margin-bottom: 12rpx;">自定义时间段</view>
-    <view style="font-size: 26rpx; color: #7E9078; margin-bottom: 24rpx;">选择开始和结束时间</view>
-    <view style="display:flex; gap: 20rpx; margin-bottom: 28rpx;">
-      <view style="flex:1;">
-        <view style="font-size:24rpx; color:#7E9078; margin-bottom:8rpx;">开始</view>
-        <picker mode="time" value="{{rangeStart}}" bindchange="onRangeStart">
-          <view class="time-input">{{rangeStart || '00:00'}}</view>
-        </picker>
-      </view>
-      <view style="flex:1;">
-        <view style="font-size:24rpx; color:#7E9078; margin-bottom:8rpx;">结束</view>
-        <picker mode="time" value="{{rangeEnd}}" bindchange="onRangeEnd">
-          <view class="time-input">{{rangeEnd || '23:59'}}</view>
-        </picker>
-      </view>
-    </view>
-    <button class="btn btn-primary" style="width:100%; margin-bottom: 12rpx;" bindtap="applyCustomRange">查看这段时间</button>
-    <button class="btn" style="width:100%; color:#7E9078;" bindtap="closeRange">取消</button>
-  </view>
-</view>

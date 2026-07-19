@@ -27,8 +27,12 @@ exports.main = async () => {
   const member = await db.collection("family_members").where({ openid: OPENID }).limit(1).get()
   if ((member.data || []).length > 0) {
     const familyId = member.data[0].familyId
-    const fam = await db.collection("families").doc(familyId).get()
-    return { familyId, joinCode: fam.data.joinCode }
+    try {
+      const fam = await db.collection("families").doc(familyId).get()
+      if (fam.data) return { familyId, joinCode: fam.data.joinCode }
+    } catch (e) {
+      // Family doc deleted — fall through to create a new one
+    }
   }
 
   const joinCode = await ensureUniqueJoinCode()

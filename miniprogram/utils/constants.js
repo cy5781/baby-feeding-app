@@ -17,10 +17,9 @@ var POOP_COLORS = ["黄", "绿", "褐", "黑"]
 
 var TIME_FILTERS = [
   { key: "all", label: "全天" },
-  { key: "0-6", label: "凌晨" },
   { key: "6-12", label: "上午" },
   { key: "12-18", label: "下午" },
-  { key: "18-24", label: "晚上" }
+  { key: "18-6", label: "晚上" }
 ]
 
 module.exports = {

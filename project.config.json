@@ -39,8 +39,8 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "3.4.7",
-  "appid": "wx833dacd6c9c9d367",
+  "libVersion": "3.16.1",
+  "appid": "wxe6658f785afdc316",
   "projectname": "baby_feed_miniapp",
   "miniprogramRoot": "miniprogram/",
   "srcMiniprogramRoot": "miniprogram/",

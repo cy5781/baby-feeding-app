@@ -29,7 +29,6 @@ function mapEvent(e) {
   return { _id: e._id, type: "", time: time, ts: e.ts, desc: "记录", meta: "" }
 }
 
-/** Build filter chip data with computed activeClass */
 function buildFilters(activeKey) {
   return TIME_FILTERS.map(function (f) {
     return {
@@ -54,14 +53,8 @@ Page({
     medSummary: "",
     filters: buildFilters("all"),
     filterActive: "all",
-    customClass: "filter-chip",
-    customLabel: "自定义",
-    rangeOverlayClass: "overlay",
     allItems: [],
-    filteredItems: [],
-    showRange: false,
-    rangeStart: "00:00",
-    rangeEnd: "23:59"
+    filteredItems: []
   },
 
   onShow: function () {
@@ -136,27 +129,28 @@ Page({
   applyFilter: function () {
     var filterActive = this.data.filterActive
     var allItems = this.data.allItems
-    var rangeStart = this.data.rangeStart
-    var rangeEnd = this.data.rangeEnd
     var filtered = allItems
 
-    if (filterActive !== "all" && filterActive !== "custom") {
+    if (filterActive !== "all") {
       var parts = filterActive.split("-")
       var hStart = Number(parts[0])
       var hEnd = Number(parts[1])
-      filtered = allItems.filter(function (item) {
-        var d = new Date(item.ts)
-        var h = d.getHours()
-        return h >= hStart && h < hEnd
-      })
-    } else if (filterActive === "custom") {
-      var sm = timeToMin(rangeStart)
-      var em = timeToMin(rangeEnd)
-      filtered = allItems.filter(function (item) {
-        var d = new Date(item.ts)
-        var m = d.getHours() * 60 + d.getMinutes()
-        return em >= sm ? (m >= sm && m <= em) : (m >= sm || m <= em)
-      })
+      // Check for cross-midnight: "18-6" means hStart=18, hEnd=6, hStart > hEnd
+      if (hStart > hEnd) {
+        // Cross-midnight range: record time >= hStart OR record time < hEnd
+        filtered = allItems.filter(function (item) {
+          var d = new Date(item.ts)
+          var h = d.getHours()
+          return h >= hStart || h < hEnd
+        })
+      } else {
+        // Normal range: record time >= hStart AND record time < hEnd
+        filtered = allItems.filter(function (item) {
+          var d = new Date(item.ts)
+          var h = d.getHours()
+          return h >= hStart && h < hEnd
+        })
+      }
     }
     this.setData({ filteredItems: filtered })
   },
@@ -165,39 +159,7 @@ Page({
     var key = e.currentTarget.dataset.key
     this.setData({
       filterActive: key,
-      filters: buildFilters(key),
-      customClass: "filter-chip",
-      customLabel: "自定义"
-    })
-    this.applyFilter()
-  },
-
-  onCustomRange: function () {
-    this.setData({ showRange: true, rangeOverlayClass: "overlay active" })
-  },
-
-  closeRange: function () {
-    this.setData({ showRange: false, rangeOverlayClass: "overlay" })
-  },
-
-  onRangeStart: function (e) {
-    this.setData({ rangeStart: e.detail.value })
-  },
-
-  onRangeEnd: function (e) {
-    this.setData({ rangeEnd: e.detail.value })
-  },
-
-  applyCustomRange: function () {
-    var rangeStart = this.data.rangeStart
-    var rangeEnd = this.data.rangeEnd
-    this.setData({
-      filterActive: "custom",
-      filters: buildFilters("custom"),
-      customClass: "filter-chip active",
-      customLabel: rangeStart + "–" + rangeEnd,
-      showRange: false,
-      rangeOverlayClass: "overlay"
+      filters: buildFilters(key)
     })
     this.applyFilter()
   },
@@ -231,8 +193,3 @@ Page({
     wx.stopPullDownRefresh()
   }
 })
-
-function timeToMin(t) {
-  var parts = t.split(":")
-  return Number(parts[0]) * 60 + Number(parts[1])
-}

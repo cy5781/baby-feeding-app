@@ -14,7 +14,6 @@ exports.main = async () => {
   const familyId = await requireFamilyId()
 
   // Delete all events for this family (paginated to handle > 200 docs)
-  const _ = db.command
   while (true) {
     const res = await db.collection("events")
       .where({ familyId })
