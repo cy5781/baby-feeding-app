@@ -1,25 +1,25 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
 var formatDateKey = dateUtils.formatDateKey
-var POOP_TYPES = require("../../utils/constants").POOP_TYPES
-var POOP_COLORS = require("../../utils/constants").POOP_COLORS
-var POOP_AMOUNTS = require("../../utils/constants").POOP_AMOUNTS
 
-function buildTypes(selected) {
-  return POOP_TYPES.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
-  })
-}
+var ILLNESS_TYPES = [
+  { key: "fever", label: "发烧", icon: "🤒", bgClass: "ill-card-fever" },
+  { key: "cough", label: "咳嗽/流涕", icon: "🤧", bgClass: "ill-card-cough" },
+  { key: "vomit", label: "呕吐/腹泻", icon: "🤮", bgClass: "ill-card-vomit" },
+  { key: "other", label: "其他症状", icon: "✏️", bgClass: "ill-card-other" }
+]
 
-function buildColors(selected) {
-  return POOP_COLORS.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
-  })
-}
-
-function buildAmounts(selected) {
-  return POOP_AMOUNTS.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
+function buildIllnessCards(selected) {
+  return ILLNESS_TYPES.map(function (item) {
+    var card = {
+      key: item.key,
+      label: item.label,
+      icon: item.icon
+    }
+    card.cardClass = item.key === selected
+      ? "illness-card " + item.bgClass + " illness-card-selected"
+      : "illness-card " + item.bgClass
+    return card
   })
 }
 
@@ -52,33 +52,36 @@ function buildDateTime(offset, timeStr) {
   return { dateKey: formatDateKey(d), ts: d.getTime() }
 }
 
+function getLabelByKey(key) {
+  for (var i = 0; i < ILLNESS_TYPES.length; i++) {
+    if (ILLNESS_TYPES[i].key === key) return ILLNESS_TYPES[i].label
+  }
+  return key
+}
+
 Page({
   data: {
-    types: buildTypes(""),
-    colors: buildColors(""),
-    amounts: buildAmounts(""),
-    poopType: "",
-    poopColor: "",
-    poopAmount: "",
-    note: "",
+    cards: buildIllnessCards(""),
+    illnessType: "",
+    illnessLabel: "",
+    otherText: "",
     dateOffset: 0,
     dateOffsets: buildDateOffsets(0),
-    customTime: defaultTime()
+    customTime: defaultTime(),
+    note: ""
   },
 
-  pickType: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopType: val, types: buildTypes(val) })
+  pickIllness: function (e) {
+    var key = e.currentTarget.dataset.key
+    this.setData({
+      illnessType: key,
+      illnessLabel: getLabelByKey(key),
+      cards: buildIllnessCards(key)
+    })
   },
 
-  pickColor: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopColor: val, colors: buildColors(val) })
-  },
-
-  pickAmount: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopAmount: val, amounts: buildAmounts(val) })
+  onOtherText: function (e) {
+    this.setData({ otherText: e.detail.value })
   },
 
   onNote: function (e) {
@@ -95,23 +98,30 @@ Page({
   },
 
   save: function () {
-    if (!this.data.poopType) {
-      wx.showToast({ title: "请选择类型", icon: "none" })
+    var illnessType = this.data.illnessType
+    if (!illnessType) {
+      wx.showToast({ title: "请选择一种症状", icon: "none" })
       return
     }
-    if (!this.data.poopColor) {
-      wx.showToast({ title: "请选择颜色", icon: "none" })
-      return
+
+    // For "other", use the custom text as label
+    var subType = illnessType
+    if (illnessType === "other") {
+      var otherText = String(this.data.otherText || "").trim()
+      if (!otherText) {
+        wx.showToast({ title: "请输入症状描述", icon: "none" })
+        return
+      }
+      subType = otherText
     }
+
     var dt = buildDateTime(this.data.dateOffset, this.data.customTime)
     var that = this
     api.addEvent({
-      type: "poop",
+      type: "illness",
       dateKey: dt.dateKey,
       ts: dt.ts,
-      poopType: this.data.poopType,
-      poopColor: this.data.poopColor,
-      poopAmount: this.data.poopAmount || "",
+      subType: subType,
       note: this.data.note || ""
     }).then(function () {
       wx.showToast({ title: "已保存", icon: "success" })

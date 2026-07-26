@@ -22,7 +22,8 @@ exports.main = async (event) => {
 
   if (!type || !dateKey) throw new Error("bad_request")
 
-  const data = { familyId, type, dateKey, ts, note, createdAt: db.serverDate() }
+  const source = String(event.source || "manual")
+  const data = { familyId, type, dateKey, ts, note, source, createdAt: db.serverDate() }
 
   if (type === "milk") {
     data.milkAmount = parseInt(event.milkAmount, 10)
@@ -38,10 +39,21 @@ exports.main = async (event) => {
   } else if (type === "poop") {
     data.poopType = String(event.poopType || "").trim()
     data.poopColor = String(event.poopColor || "").trim()
+    data.poopAmount = String(event.poopAmount || "").trim()
     if (!data.poopType || !data.poopColor) throw new Error("poop_required")
   } else if (type === "sleep") {
     data.sleepEvent = String(event.sleepEvent || "").trim()
     if (!data.sleepEvent) throw new Error("sleepEvent_required")
+  } else if (type === "vaccine") {
+    data.subType = String(event.subType || "").trim()
+    data.imageUrl = String(event.imageUrl || "").trim()
+    if (!data.subType && !data.imageUrl) throw new Error("vaccine_required")
+  } else if (type === "illness") {
+    data.subType = String(event.subType || "").trim()
+    if (!data.subType) throw new Error("illness_required")
+  } else if (type === "weight") {
+    data.weightKg = parseFloat(event.weightKg)
+    if (!data.weightKg || data.weightKg <= 0) throw new Error("weight_required")
   } else {
     throw new Error("type_not_supported")
   }

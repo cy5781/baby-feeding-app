@@ -29,9 +29,10 @@ exports.main = async (event) => {
     .get()
 
   const items = res.data || []
-  let milkCount = 0, milkTotal = 0, solidCount = 0, poopCount = 0
+  let milkCount = 0, milkTotal = 0, solidCount = 0, poopCount = 0, vaccineCount = 0, illnessCount = 0
   const meds = { AD: false, D3: false, DHA: false, CALCIUM: false }
   let lastMilk = null
+  let latestWeight = null
 
   for (const e of items) {
     if (e.type === "milk") {
@@ -47,8 +48,16 @@ exports.main = async (event) => {
       var medKey = String(e.medName || "").trim()
       if (LABEL_TO_KEY[medKey]) medKey = LABEL_TO_KEY[medKey]
       if (Object.prototype.hasOwnProperty.call(meds, medKey)) meds[medKey] = true
+    } else if (e.type === "vaccine") {
+      vaccineCount += 1
+    } else if (e.type === "illness") {
+      illnessCount += 1
+    } else if (e.type === "weight") {
+      if (!latestWeight) {
+        latestWeight = { dateKey: e.dateKey, weightKg: e.weightKg }
+      }
     }
   }
 
-  return { milkCount, milkTotal, solidCount, poopCount, meds, lastMilk }
+  return { milkCount, milkTotal, solidCount, poopCount, meds, lastMilk, vaccineCount, illnessCount, latestWeight }
 }

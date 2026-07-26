@@ -1,0 +1,82 @@
+/* Photo upload */
+.vaccine-upload-box {
+  background: #fff;
+  border: 4rpx dashed #D3E6CB;
+  border-radius: 28rpx;
+  padding: 60rpx 28rpx;
+  text-align: center;
+  margin-bottom: 8rpx;
+}
+.vaccine-upload-box:active {
+  background: #F5FAF3;
+}
+
+.vaccine-upload-icon {
+  font-size: 72rpx;
+  margin-bottom: 16rpx;
+}
+
+.vaccine-upload-text {
+  font-size: 30rpx;
+  color: #7E9078;
+  font-weight: 600;
+}
+
+.vaccine-photo-preview {
+  margin-bottom: 8rpx;
+}
+
+.vaccine-photo {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 28rpx;
+  background: #F5FAF3;
+}
+
+.vaccine-uploading-hint {
+  text-align: center;
+  color: #7E9078;
+  font-size: 26rpx;
+  padding: 20rpx;
+}
+
+/* Divider */
+.vaccine-divider {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin: 36rpx 0;
+}
+
+.vaccine-divider-line {
+  flex: 1;
+  height: 2rpx;
+  background: #D3E6CB;
+}
+
+.vaccine-divider-text {
+  color: #7E9078;
+  font-size: 26rpx;
+}
+
+/* Name input */
+.vaccine-name-input {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #33422E;
+}
+
+.note-textarea {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 22rpx 24rpx;
+  font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80rpx;
+}

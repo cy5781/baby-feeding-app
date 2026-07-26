@@ -24,12 +24,28 @@
     <button class="btn" style="width:100rpx; font-size:40rpx; padding:20rpx;" data-delta="10" bindtap="step">+</button>
   </view>
 
-  <view class="section-title">备注（选填）</view>
-  <input
-    class="note-input"
+  <view class="section-title">记录时间</view>
+  <view class="chip-row" style="margin-bottom: 16rpx;">
+    <text
+      wx:for="{{dateOffsets}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-offset="{{item.value}}"
+      bindtap="pickDateOffset"
+    >{{item.label}}</text>
+  </view>
+  <picker mode="time" value="{{customTime}}" bindchange="onTimeChange">
+    <view class="time-picker-btn">{{customTime}}</view>
+  </picker>
+
+  <view class="section-title" style="margin-top: 28rpx;">备注（选填）</view>
+  <textarea
+    class="note-textarea"
     placeholder="例如：加了D3"
     value="{{note}}"
     bindinput="onNote"
+    auto-height
+    maxlength="200"
   />
 
   <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>

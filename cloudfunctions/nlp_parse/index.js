@@ -36,7 +36,7 @@ function postJson(url, body, headers) {
 }
 
 function normalizeResult(obj) {
-  const allowedTypes = ["milk", "solid", "med", "poop", "sleep"]
+  const allowedTypes = ["milk", "solid", "med", "poop", "sleep", "vaccine", "illness", "weight"]
   if (!obj || typeof obj !== "object") return { type: "unknown" }
   if (!allowedTypes.includes(obj.type)) return { type: "unknown" }
 
@@ -55,9 +55,19 @@ function normalizeResult(obj) {
   if (obj.type === "poop") {
     out.poopType = String(obj.poopType || "").trim()
     out.poopColor = String(obj.poopColor || "").trim()
+    out.poopAmount = String(obj.poopAmount || "").trim()
   }
   if (obj.type === "sleep") {
     out.sleepEvent = String(obj.sleepEvent || "").trim()
+  }
+  if (obj.type === "vaccine") {
+    out.subType = String(obj.subType || "").trim()
+  }
+  if (obj.type === "illness") {
+    out.subType = String(obj.subType || "").trim()
+  }
+  if (obj.type === "weight") {
+    out.weightKg = parseFloat(obj.weightKg) || 0
   }
 
   const offset = parseInt(obj.dateOffsetDays, 10)
@@ -82,17 +92,20 @@ exports.main = async (event) => {
   const system = [
     "你是一个信息抽取服务，只输出 JSON。",
     "从用户输入里抽取一条宝宝喂养记录。",
-    "允许的类型 type：milk / solid / med / poop / sleep。",
+    "允许的类型 type：milk / solid / med / poop / sleep / vaccine / illness / weight。",
     "输出 JSON schema：",
     "{",
-    '  "type": "milk|solid|med|poop|sleep|unknown",',
+    '  "type": "milk|solid|med|poop|sleep|vaccine|illness|weight|unknown",',
     '  "milkAmount": 130,',
-    '  "solidItem": "米糊",',
-    '  "solidPortion": "少量|半碗|一碗|",',
+    '  "solidItem": "米糊、蛋黄",',
+    '  "solidPortion": "少量|半碗|一碗|很多|",',
     '  "medName": "AD|D3|DHA|CALCIUM",',
     '  "poopType": "干|正常|稀",',
     '  "poopColor": "黄|绿|褐|黑",',
+    '  "poopAmount": "少|正常|多",',
     '  "sleepEvent": "入睡|醒来",',
+    '  "subType": "乙肝疫苗|百白破|发烧|咳嗽|流涕|腹泻",',
+    '  "weightKg": 8.5,',
     '  "dateOffsetDays": 0,',
     '  "hour": 21,',
     '  "minute": 30,',
@@ -100,6 +113,7 @@ exports.main = async (event) => {
     "}",
     "dateOffsetDays 只允许 0(今天)/-1(昨天)/-2(前天)，没提到就用0。",
     "hour/minute 如果用户没说时间就省略，不要胡编。",
+    "如果用户提到多种辅食，solidItem 用顿号连接，如"米糊、蛋黄"。",
     "中文数字要转成阿拉伯数字（如"一百四十五"→145，"九点半"→9:30）。",
     "如果无法判断类型，type 输出 unknown。"
   ].join("\n")

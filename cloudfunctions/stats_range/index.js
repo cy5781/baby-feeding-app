@@ -44,8 +44,10 @@ exports.main = async (event) => {
 
   const map = {}
   for (const k of keys) {
-    map[k] = { dateKey: k, milkCount: 0, milkTotal: 0, solidCount: 0, poopCount: 0 }
+    map[k] = { dateKey: k, milkCount: 0, milkTotal: 0, solidCount: 0, poopCount: 0, vaccineCount: 0, illnessCount: 0, weightKg: 0 }
   }
+
+  let latestWeight = null
 
   for (const e of all) {
     const row = map[e.dateKey]
@@ -57,8 +59,20 @@ exports.main = async (event) => {
       row.solidCount += 1
     } else if (e.type === "poop") {
       row.poopCount += 1
+    } else if (e.type === "vaccine") {
+      row.vaccineCount += 1
+    } else if (e.type === "illness") {
+      row.illnessCount += 1
+    } else if (e.type === "weight") {
+      // Keep the latest weight entry for each day
+      if (!row.weightKg) {
+        row.weightKg = parseFloat(e.weightKg) || 0
+      }
+      if (!latestWeight) {
+        latestWeight = { dateKey: e.dateKey, weightKg: parseFloat(e.weightKg) || 0 }
+      }
     }
   }
 
-  return { rows: keys.map((k) => map[k]) }
+  return { rows: keys.map((k) => map[k]), latestWeight: latestWeight }
 }

@@ -1,4 +1,47 @@
 <view class="container">
+  <!-- Weight card -->
+  <view class="card weight-card" style="margin-bottom: 28rpx;" bindtap="showWeight">
+    <view style="display:flex; align-items:center; gap: 20rpx;">
+      <view class="weight-card-icon">⚖️</view>
+      <view style="flex:1;">
+        <view class="weight-card-label">📏 添加今日体重</view>
+        <view class="weight-card-value" wx:if="{{latestWeight}}">最近：{{latestWeight.weightKg}}kg（{{latestWeight.dateKey}}）</view>
+        <view class="weight-card-value" wx:else>点击记录宝宝体重</view>
+      </view>
+      <view style="font-size:36rpx; color:#7E9078;">›</view>
+    </view>
+  </view>
+
+  <!-- Weight input overlay -->
+  <view class="{{weightOverlayClass}}" bindtap="hideWeight">
+    <view class="weight-sheet" catchtap="">
+      <view class="med-sheet-title">记录体重</view>
+
+      <view style="display:flex; align-items:center; justify-content:center; gap: 8rpx; margin-bottom: 24rpx;">
+        <input
+          class="weight-input"
+          type="digit"
+          placeholder="0.0"
+          value="{{weightKg}}"
+          bindinput="onWeightInput"
+          focus="{{showWeightInput}}"
+        />
+        <text style="font-size:36rpx; font-weight:700; color:#33422E;">kg</text>
+      </view>
+
+      <view style="margin-bottom: 24rpx;">
+        <picker mode="time" value="{{weightTime}}" bindchange="onWeightTimeChange">
+          <view class="time-picker-btn">{{weightTime}}</view>
+        </picker>
+      </view>
+
+      <view style="display:flex; gap: 16rpx;">
+        <button class="btn" style="flex:1;" bindtap="hideWeight">取消</button>
+        <button class="btn btn-primary" style="flex:1;" bindtap="saveWeight">保存</button>
+      </view>
+    </view>
+  </view>
+
   <!-- Today card -->
   <view class="card" style="margin-bottom: 28rpx;">
     <view style="font-size: 28rpx; font-weight: 700; color: #7E9078; margin-bottom: 16rpx;">今日</view>
@@ -21,13 +64,14 @@
       wx:for="{{rows}}"
       wx:key="dateKey"
       class="item"
-      wx:if="{{item.milkCount > 0 || item.solidCount > 0 || item.poopCount > 0}}"
+      wx:if="{{item.milkCount > 0 || item.solidCount > 0 || item.poopCount > 0 || item.weightKg > 0}}"
     >
       <view class="item-title">{{item.dateKey}}</view>
       <view class="item-meta">
         🍼 {{item.milkCount}}次 · {{item.milkTotal}}ml
         <text wx:if="{{item.solidCount > 0}}"> | 🥣 {{item.solidCount}}次</text>
         <text wx:if="{{item.poopCount > 0}}"> | 💩 {{item.poopCount}}次</text>
+        <text wx:if="{{item.weightKg > 0}}"> | ⚖️ {{item.weightKg}}kg</text>
       </view>
     </view>
   </view>

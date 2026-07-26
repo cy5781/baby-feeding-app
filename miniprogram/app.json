@@ -8,6 +8,8 @@
     "pages/entry-solid/index",
     "pages/entry-med/index",
     "pages/entry-poop/index",
+    "pages/entry-vaccine/index",
+    "pages/entry-illness/index",
     "pages/voice/index"
   ],
   "window": {

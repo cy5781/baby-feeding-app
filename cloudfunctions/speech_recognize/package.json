@@ -1,0 +1,9 @@
+{
+  "name": "speech_recognize",
+  "version": "1.0.0",
+  "description": "Speech-to-text via Tencent Cloud ASR",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

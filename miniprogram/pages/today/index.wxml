@@ -48,7 +48,12 @@
       <view class="summary-chip">🍼 喝奶 {{summaryMilkCount}}次 · {{summaryMilkTotal}}ml</view>
       <view class="summary-chip">🥣 辅食 {{summarySolidCount}}次</view>
       <view class="summary-chip">💩 便便 {{summaryPoopCount}}次</view>
-      <view class="summary-chip">💊 用药 {{medCount}}次{{medSummary}}</view>
+      <view class="summary-chip">
+        💊 用药 {{medCount}}次{{medSummary}}
+        <text wx:if="{{vaccineCount > 0 || illnessCount > 0}}" style="display:block; font-size:22rpx; font-weight:400; opacity:0.75;">
+          💉{{vaccineCount > 0 ? vaccineCount + '次' : ''}} {{illnessCount > 0 ? '🤒' + illnessCount + '次' : ''}}
+        </text>
+      </view>
     </view>
   </view>
 
@@ -85,6 +90,29 @@
   <view class="empty" wx:else>这段时间还没有记录</view>
 
   <view class="page-bottom"></view>
+</view>
+
+<!-- Med ActionSheet -->
+<view class="{{medSheetOverlayClass}}" bindtap="closeMedSheet">
+  <view class="med-sheet" catchtap="">
+    <view class="med-sheet-title">请选择记录类型</view>
+    <button class="med-sheet-btn med-sheet-drug" bindtap="goMedEntry">
+      <text class="med-sheet-icon">💊</text>
+      <text class="med-sheet-label">吃药/滴剂</text>
+      <text class="med-sheet-hint">AD、D3、DHA、钙</text>
+    </button>
+    <button class="med-sheet-btn med-sheet-vaccine" bindtap="goVaccine">
+      <text class="med-sheet-icon">💉</text>
+      <text class="med-sheet-label">打疫苗</text>
+      <text class="med-sheet-hint">拍照或输入名称</text>
+    </button>
+    <button class="med-sheet-btn med-sheet-illness" bindtap="goIllness">
+      <text class="med-sheet-icon">🤒</text>
+      <text class="med-sheet-label">生病发烧</text>
+      <text class="med-sheet-hint">记录宝宝症状</text>
+    </button>
+    <button class="med-sheet-cancel" bindtap="closeMedSheet">取消</button>
+  </view>
 </view>
 
 <!-- Floating mic button -->

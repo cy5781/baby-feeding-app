@@ -1,4 +1,4 @@
-.note-input {
+.note-textarea {
   background: #fff;
   border: 2rpx solid #D3E6CB;
   border-radius: 20rpx;
@@ -6,5 +6,15 @@
   font-size: 30rpx;
   width: 100%;
   box-sizing: border-box;
+  min-height: 80rpx;
   margin-top: 8rpx;
+}
+
+.solid-custom-input {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 22rpx 24rpx;
+  font-size: 28rpx;
+  height: auto;
 }

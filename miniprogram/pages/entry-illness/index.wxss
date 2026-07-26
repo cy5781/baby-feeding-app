@@ -1,0 +1,83 @@
+/* 2x2 illness grid */
+.illness-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20rpx;
+  margin-bottom: 8rpx;
+}
+
+/* Large illness cards */
+.illness-card {
+  width: 100%;
+  border: none;
+  border-radius: 28rpx;
+  padding: 40rpx 20rpx;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(51,66,46,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+.illness-card:active {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+.illness-card-selected {
+  border: 4rpx solid #33422E;
+  box-shadow: 0 6px 24px rgba(51,66,46,0.18);
+}
+
+.illness-card-icon {
+  font-size: 56rpx;
+  display: block;
+}
+
+.illness-card-label {
+  font-size: 30rpx;
+  font-weight: 800;
+  display: block;
+}
+
+.ill-card-fever {
+  background: #FBE2DA;
+  color: #A04030;
+}
+
+.ill-card-cough {
+  background: #FBEBD2;
+  color: #8A5A16;
+}
+
+.ill-card-vomit {
+  background: #DCEEE9;
+  color: #2C6B5C;
+}
+
+.ill-card-other {
+  background: #DCEFDA;
+  color: #2C6B40;
+}
+
+/* Other symptom input */
+.illness-other-input {
+  background: #fff;
+  border: 2rpx solid #4F9668;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #33422E;
+}
+
+.note-textarea {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 22rpx 24rpx;
+  font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80rpx;
+}

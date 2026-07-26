@@ -1,6 +1,6 @@
 <view class="container">
-  <view class="section-title">辅食内容</view>
-  <view class="chip-row" style="margin-bottom: 28rpx;">
+  <view class="section-title">辅食内容（可多选）</view>
+  <view class="chip-row" style="margin-bottom: 20rpx;">
     <text
       wx:for="{{presets}}"
       wx:key="value"
@@ -9,15 +9,22 @@
       bindtap="pick"
     >{{item.value}}</text>
   </view>
-  <input
-    class="note-input"
-    placeholder="或输入其他辅食名称"
-    value="{{solidItem}}"
-    bindinput="onSolidItem"
-  />
 
-  <view class="section-title" style="margin-top: 32rpx;">份量</view>
-  <view class="chip-row" style="margin-bottom: 36rpx;">
+  <!-- Custom item input -->
+  <view style="display:flex; gap: 12rpx; margin-bottom: 36rpx;">
+    <input
+      class="solid-custom-input"
+      style="flex:1;"
+      placeholder="输入其他辅食名称"
+      value="{{solidCustom}}"
+      bindinput="onSolidCustom"
+      bindconfirm="addCustom"
+    />
+    <button class="btn" style="width:120rpx; font-size:26rpx; padding:22rpx 0;" bindtap="addCustom">添加</button>
+  </view>
+
+  <view class="section-title">份量</view>
+  <view class="chip-row" style="margin-bottom: 28rpx;">
     <text
       wx:for="{{portions}}"
       wx:key="value"
@@ -27,12 +34,28 @@
     >{{item.value}}</text>
   </view>
 
-  <view class="section-title">备注（选填）</view>
-  <input
-    class="note-input"
-    placeholder="例如：加了少许"
+  <view class="section-title">记录时间</view>
+  <view class="chip-row" style="margin-bottom: 16rpx;">
+    <text
+      wx:for="{{dateOffsets}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-offset="{{item.value}}"
+      bindtap="pickDateOffset"
+    >{{item.label}}</text>
+  </view>
+  <picker mode="time" value="{{customTime}}" bindchange="onTimeChange">
+    <view class="time-picker-btn">{{customTime}}</view>
+  </picker>
+
+  <view class="section-title" style="margin-top: 28rpx;">备注（选填）</view>
+  <textarea
+    class="note-textarea"
+    placeholder="例如：很喜欢吃"
     value="{{note}}"
     bindinput="onNote"
+    auto-height
+    maxlength="200"
   />
 
   <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">保存记录</button>

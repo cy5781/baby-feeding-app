@@ -1,1 +1,50 @@
-/* uses global styles */
+/* Weight card */
+.weight-card {
+  cursor: pointer;
+}
+.weight-card-icon {
+  font-size: 52rpx;
+}
+.weight-card-label {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #33422E;
+}
+.weight-card-value {
+  font-size: 24rpx;
+  color: #7E9078;
+  margin-top: 6rpx;
+}
+
+/* Weight input overlay */
+.weight-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(30,26,20,0.45);
+  display: none;
+  align-items: flex-end;
+  z-index: 200;
+}
+.weight-overlay.active {
+  display: flex;
+}
+
+.weight-sheet {
+  width: 100%;
+  background: #F5FAF3;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 40rpx 32rpx 48rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.weight-input {
+  width: 200rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid #4F9668;
+  background: #fff;
+  font-size: 48rpx;
+  font-weight: 800;
+  text-align: center;
+  color: #33422E;
+}

@@ -19,12 +19,28 @@ function mapEvent(e) {
       desc: "用药 " + label, meta: e.note || "" }
   }
   if (e.type === "poop") {
+    var amt = e.poopAmount ? " · " + e.poopAmount : ""
     return { _id: e._id, type: "poop", time: time, ts: e.ts,
-      desc: "便便 " + e.poopType + " · " + e.poopColor, meta: e.note || "" }
+      desc: "便便 " + e.poopType + " · " + e.poopColor + amt, meta: e.note || "" }
   }
   if (e.type === "sleep") {
     return { _id: e._id, type: "sleep", time: time, ts: e.ts,
       desc: "睡眠 " + e.sleepEvent, meta: e.note || "" }
+  }
+  if (e.type === "vaccine") {
+    var vName = e.subType || "疫苗"
+    return { _id: e._id, type: "vaccine", time: time, ts: e.ts,
+      desc: "💉 疫苗 " + vName, meta: e.note || "" }
+  }
+  if (e.type === "illness") {
+    var iName = e.subType || "不适"
+    return { _id: e._id, type: "illness", time: time, ts: e.ts,
+      desc: "🤒 " + iName, meta: e.note || "" }
+  }
+  if (e.type === "weight") {
+    var w = e.weightKg || 0
+    return { _id: e._id, type: "weight", time: time, ts: e.ts,
+      desc: "⚖️ 体重 " + w + "kg", meta: "" }
   }
   return { _id: e._id, type: "", time: time, ts: e.ts, desc: "记录", meta: "" }
 }
@@ -51,10 +67,14 @@ Page({
     summaryPoopCount: 0,
     medCount: 0,
     medSummary: "",
+    vaccineCount: 0,
+    illnessCount: 0,
     filters: buildFilters("all"),
     filterActive: "all",
     allItems: [],
-    filteredItems: []
+    filteredItems: [],
+    showMedSheet: false,
+    medSheetOverlayClass: "med-sheet-overlay"
   },
 
   onShow: function () {
@@ -108,6 +128,8 @@ Page({
         summaryPoopCount: summary ? (summary.poopCount || 0) : 0,
         medCount: medCount,
         medSummary: medSummary,
+        vaccineCount: summary ? (summary.vaccineCount || 0) : 0,
+        illnessCount: summary ? (summary.illnessCount || 0) : 0,
         lastMilk: lastMilk,
         allItems: allItems
       })
@@ -118,6 +140,7 @@ Page({
           summaryMilkCount: 0, summaryMilkTotal: 0,
           summarySolidCount: 0, summaryPoopCount: 0,
           medCount: 0, medSummary: "",
+          vaccineCount: 0, illnessCount: 0,
           lastMilk: null, allItems: [], filteredItems: []
         })
         return
@@ -166,9 +189,28 @@ Page({
 
   goMilk: function () { wx.navigateTo({ url: "/pages/entry-milk/index" }) },
   goSolid: function () { wx.navigateTo({ url: "/pages/entry-solid/index" }) },
-  goMed: function () { wx.navigateTo({ url: "/pages/entry-med/index" }) },
   goPoop: function () { wx.navigateTo({ url: "/pages/entry-poop/index" }) },
   goVoice: function () { wx.navigateTo({ url: "/pages/voice/index" }) },
+
+  // Med button now shows ActionSheet
+  goMed: function () {
+    this.setData({ showMedSheet: true, medSheetOverlayClass: "med-sheet-overlay active" })
+  },
+  closeMedSheet: function () {
+    this.setData({ showMedSheet: false, medSheetOverlayClass: "med-sheet-overlay" })
+  },
+  goMedEntry: function () {
+    this.setData({ showMedSheet: false, medSheetOverlayClass: "med-sheet-overlay" })
+    wx.navigateTo({ url: "/pages/entry-med/index" })
+  },
+  goVaccine: function () {
+    this.setData({ showMedSheet: false, medSheetOverlayClass: "med-sheet-overlay" })
+    wx.navigateTo({ url: "/pages/entry-vaccine/index" })
+  },
+  goIllness: function () {
+    this.setData({ showMedSheet: false, medSheetOverlayClass: "med-sheet-overlay" })
+    wx.navigateTo({ url: "/pages/entry-illness/index" })
+  },
 
   onDeleteItem: function (e) {
     var id = e.currentTarget.dataset.id

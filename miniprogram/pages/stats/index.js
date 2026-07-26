@@ -1,5 +1,7 @@
-const api = require("../../services/api")
-const { todayKey } = require("../../utils/date")
+var api = require("../../services/api")
+var dateUtils = require("../../utils/date")
+var todayKey = dateUtils.todayKey
+var formatDateKey = dateUtils.formatDateKey
 
 function buildDayClasses(days) {
   return {
@@ -8,13 +10,25 @@ function buildDayClasses(days) {
   }
 }
 
+function defaultTime() {
+  var d = new Date()
+  var h = d.getHours()
+  var m = d.getMinutes()
+  return (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
+}
+
 Page({
   data: {
     days: 7,
     days7Class: "btn chip-active",
     days30Class: "btn",
     today: {},
-    rows: []
+    rows: [],
+    latestWeight: null,
+    showWeightInput: false,
+    weightOverlayClass: "weight-overlay",
+    weightKg: "",
+    weightTime: defaultTime()
   },
 
   onShow: function () { this.load() },
@@ -35,13 +49,62 @@ Page({
         var stats = results[1]
         that.setData({
           today: today || {},
-          rows: (stats && stats.rows) || []
+          rows: (stats && stats.rows) || [],
+          latestWeight: (stats && stats.latestWeight) || null
         })
       }).catch(function (err) {
         if (api.isFamilyRequired(err)) {
-          that.setData({ today: {}, rows: [] })
+          that.setData({ today: {}, rows: [], latestWeight: null })
           return
         }
       })
+  },
+
+  /* ---- Weight entry ---- */
+  showWeight: function () {
+    this.setData({ showWeightInput: true, weightOverlayClass: "weight-overlay active", weightKg: "", weightTime: defaultTime() })
+  },
+
+  hideWeight: function () {
+    this.setData({ showWeightInput: false, weightOverlayClass: "weight-overlay" })
+  },
+
+  onWeightInput: function (e) {
+    this.setData({ weightKg: e.detail.value })
+  },
+
+  onWeightTimeChange: function (e) {
+    this.setData({ weightTime: e.detail.value })
+  },
+
+  saveWeight: function () {
+    var kg = parseFloat(this.data.weightKg)
+    if (!kg || kg <= 0 || kg > 100) {
+      wx.showToast({ title: "请输入合理的体重（kg）", icon: "none" })
+      return
+    }
+
+    var d = new Date()
+    var timeStr = this.data.weightTime
+    if (timeStr) {
+      var parts = timeStr.split(":")
+      d.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0)
+    }
+    var dateKey = formatDateKey(d)
+    var ts = d.getTime()
+
+    var that = this
+    api.addEvent({
+      type: "weight",
+      dateKey: dateKey,
+      ts: ts,
+      weightKg: kg
+    }).then(function () {
+      that.setData({ showWeightInput: false })
+      wx.showToast({ title: "体重已保存", icon: "success" })
+      that.load()
+    }).catch(function (err) {
+      wx.showToast({ title: api.friendlyMessage(err, "保存失败"), icon: "none" })
+    })
   }
 })

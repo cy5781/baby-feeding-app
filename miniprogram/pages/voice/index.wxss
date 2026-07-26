@@ -1,1 +1,31 @@
-/* uses global .voice-result-card styles from app.wxss */
+.voice-record-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 280rpx;
+  height: 280rpx;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #4F9668;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 700;
+  box-shadow: 0 8px 28px rgba(79, 150, 104, 0.4);
+  transition: all 0.15s ease;
+}
+
+.voice-record-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 16px rgba(79, 150, 104, 0.3);
+}
+
+.voice-record-btn.is-recording {
+  background: #E38A72;
+  box-shadow: 0 8px 28px rgba(227, 138, 114, 0.4);
+  animation: mic-pulse-ring 1.2s infinite;
+}
+
+@keyframes mic-pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 138, 114, 0.5); }
+  50% { box-shadow: 0 0 0 24rpx rgba(227, 138, 114, 0); }
+}

@@ -250,6 +250,17 @@ page {
   color: #33422E;
 }
 
+.time-picker-btn {
+  padding: 24rpx 28rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid #D3E6CB;
+  background: #fff;
+  font-size: 30rpx;
+  text-align: center;
+  color: #33422E;
+  font-weight: 600;
+}
+
 /* ===== Voice page ===== */
 .voice-wave {
   display: flex;

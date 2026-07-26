@@ -1,27 +1,6 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
 var formatDateKey = dateUtils.formatDateKey
-var POOP_TYPES = require("../../utils/constants").POOP_TYPES
-var POOP_COLORS = require("../../utils/constants").POOP_COLORS
-var POOP_AMOUNTS = require("../../utils/constants").POOP_AMOUNTS
-
-function buildTypes(selected) {
-  return POOP_TYPES.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
-  })
-}
-
-function buildColors(selected) {
-  return POOP_COLORS.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
-  })
-}
-
-function buildAmounts(selected) {
-  return POOP_AMOUNTS.map(function (v) {
-    return { value: v, chipClass: v === selected ? "chip chip-active" : "chip" }
-  })
-}
 
 function buildDateOffsets(selected) {
   var offsets = [
@@ -54,37 +33,65 @@ function buildDateTime(offset, timeStr) {
 
 Page({
   data: {
-    types: buildTypes(""),
-    colors: buildColors(""),
-    amounts: buildAmounts(""),
-    poopType: "",
-    poopColor: "",
-    poopAmount: "",
-    note: "",
+    vaccineName: "",
+    imagePath: "",
+    imageUrl: "",
+    uploading: false,
     dateOffset: 0,
     dateOffsets: buildDateOffsets(0),
-    customTime: defaultTime()
+    customTime: defaultTime(),
+    note: ""
   },
 
-  pickType: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopType: val, types: buildTypes(val) })
+  /* ---- Photo upload ---- */
+  takePhoto: function () {
+    var that = this
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed"],
+      sourceType: ["camera", "album"],
+      success: function (res) {
+        var tempPath = res.tempFilePaths[0]
+        that.setData({ imagePath: tempPath, uploading: true })
+        that.uploadImage(tempPath)
+      },
+      fail: function () {
+        // User cancelled
+      }
+    })
   },
 
-  pickColor: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopColor: val, colors: buildColors(val) })
+  uploadImage: function (tempPath) {
+    var that = this
+    var cloudPath = "vaccine/" + Date.now() + ".jpg"
+    wx.cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: tempPath,
+      success: function (res) {
+        that.setData({ imageUrl: res.fileID, uploading: false })
+        wx.showToast({ title: "照片已上传", icon: "success" })
+      },
+      fail: function () {
+        that.setData({ uploading: false })
+        wx.showToast({ title: "上传失败，请重试", icon: "none" })
+      }
+    })
   },
 
-  pickAmount: function (e) {
-    var val = e.currentTarget.dataset.val
-    this.setData({ poopAmount: val, amounts: buildAmounts(val) })
+  removePhoto: function () {
+    this.setData({ imagePath: "", imageUrl: "" })
+  },
+
+  /* ---- Vaccine name input ---- */
+  onVaccineName: function (e) {
+    this.setData({ vaccineName: e.detail.value })
   },
 
   onNote: function (e) {
     this.setData({ note: e.detail.value })
   },
 
+  /* ---- Date/time ---- */
   pickDateOffset: function (e) {
     var offset = parseInt(e.currentTarget.dataset.offset, 10)
     this.setData({ dateOffset: offset, dateOffsets: buildDateOffsets(offset) })
@@ -94,24 +101,24 @@ Page({
     this.setData({ customTime: e.detail.value })
   },
 
+  /* ---- Save ---- */
   save: function () {
-    if (!this.data.poopType) {
-      wx.showToast({ title: "请选择类型", icon: "none" })
+    var vaccineName = String(this.data.vaccineName || "").trim()
+    var imageUrl = String(this.data.imageUrl || "").trim()
+
+    if (!vaccineName && !imageUrl) {
+      wx.showToast({ title: "请拍照或输入疫苗名称", icon: "none" })
       return
     }
-    if (!this.data.poopColor) {
-      wx.showToast({ title: "请选择颜色", icon: "none" })
-      return
-    }
+
     var dt = buildDateTime(this.data.dateOffset, this.data.customTime)
     var that = this
     api.addEvent({
-      type: "poop",
+      type: "vaccine",
       dateKey: dt.dateKey,
       ts: dt.ts,
-      poopType: this.data.poopType,
-      poopColor: this.data.poopColor,
-      poopAmount: this.data.poopAmount || "",
+      subType: vaccineName || "疫苗",
+      imageUrl: imageUrl,
       note: this.data.note || ""
     }).then(function () {
       wx.showToast({ title: "已保存", icon: "success" })

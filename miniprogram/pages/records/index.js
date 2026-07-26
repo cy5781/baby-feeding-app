@@ -15,10 +15,24 @@ function mapEvent(e) {
     return { _id: e._id, time: time, desc: "用药", amount: label, tag: e.note || "" }
   }
   if (e.type === "poop") {
-    return { _id: e._id, time: time, desc: "便便 " + e.poopType + " · " + e.poopColor, amount: "", tag: e.note || "" }
+    var amt = e.poopAmount ? " · " + e.poopAmount : ""
+    return { _id: e._id, time: time, desc: "便便 " + e.poopType + " · " + e.poopColor + amt, amount: "", tag: e.note || "" }
   }
   if (e.type === "sleep") {
     return { _id: e._id, time: time, desc: "睡眠 " + e.sleepEvent, amount: "", tag: e.note || "" }
+  }
+  if (e.type === "vaccine") {
+    var vName = e.subType || "疫苗"
+    var hasPhoto = e.imageUrl ? " 📷" : ""
+    return { _id: e._id, time: time, desc: "💉 疫苗 " + vName + hasPhoto, amount: "", tag: e.note || "" }
+  }
+  if (e.type === "illness") {
+    var iName = e.subType || "不适"
+    return { _id: e._id, time: time, desc: "🤒 " + iName, amount: "", tag: e.note || "" }
+  }
+  if (e.type === "weight") {
+    var w = e.weightKg || 0
+    return { _id: e._id, time: time, desc: "⚖️ 体重", amount: w + "kg", tag: "" }
   }
   return { _id: e._id, time: time, desc: "记录", amount: "", tag: "" }
 }

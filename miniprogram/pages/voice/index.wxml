@@ -1,41 +1,95 @@
 <view class="container">
-  <view class="card" style="text-align:center; padding: 48rpx 28rpx;">
+  <!-- Voice recording card -->
+  <view class="card" style="text-align:center; padding: 40rpx 28rpx; margin-bottom: 32rpx;">
 
-    <!-- Input area -->
-    <view style="font-size: 28rpx; color: #7E9078; margin-bottom: 20rpx;">
-      输入一句话，自动识别记录类型
+    <!-- Wave animation when recording -->
+    <view class="voice-wave" wx:if="{{recording}}">
+      <view
+        wx:for="{{waveBars}}"
+        wx:key="index"
+        class="bar"
+        style="height: {{item}}rpx;"
+      ></view>
+    </view>
+
+    <!-- Status text -->
+    <view wx:if="{{recording}}" style="font-size:28rpx; color:#E3A857; margin-bottom:28rpx;">
+      🔴 正在聆听，请说话…
+    </view>
+    <view wx:if="{{uploading}}" style="font-size:28rpx; color:#7E9078; margin-bottom:28rpx;">
+      ⏳ 正在识别语音…
+    </view>
+
+    <!-- Recognized text -->
+    <view wx:if="{{text && !uploading}}" style="font-size:32rpx; color:#33422E; margin-bottom:20rpx; word-break:break-all;">
+      "{{text}}"
+    </view>
+
+    <!-- Hold-to-talk button -->
+    <view
+      wx:if="{{!uploading && !parsing}}"
+      class="{{recordBtnClass}}"
+      bindtouchstart="startRecord"
+      bindtouchend="stopRecord"
+      bindtouchcancel="stopRecord"
+    >
+      <text>{{recordBtnText}}</text>
+    </view>
+
+    <view wx:if="{{parsing}}" style="font-size:28rpx; color:#7E9078; padding:28rpx;">
+      🔍 正在解析内容…
+    </view>
+  </view>
+
+  <!-- Text input fallback -->
+  <view class="card" style="text-align:center; padding: 32rpx 28rpx; margin-bottom: 32rpx;">
+    <view style="font-size: 26rpx; color: #7E9078; margin-bottom: 16rpx;">
+      或直接输入文字
     </view>
 
     <textarea
-      style="background:#F5FAF3; border-radius:20rpx; padding:24rpx; width:100%; box-sizing:border-box; font-size:30rpx; min-height:120rpx;"
-      placeholder="例如：喝了一百四十五毫升奶粉，加了D3"
+      style="background:#F5FAF3; border-radius:20rpx; padding:24rpx; width:100%; box-sizing:border-box; font-size:30rpx; min-height:100rpx;"
+      placeholder="例如：喝了145毫升奶粉，加了D3"
       value="{{text}}"
       bindinput="onText"
       auto-height
     />
 
     <button
-      class="btn btn-primary"
-      style="width:100%; margin-top: 28rpx;"
+      class="btn btn-dark"
+      style="width:100%; margin-top: 20rpx;"
       bindtap="parse"
       disabled="{{parsing}}"
     >{{parseBtnText}}</button>
+  </view>
 
-    <!-- Voice record button (stub) -->
-    <button
-      class="btn btn-dark"
-      style="width:100%; margin-top: 16rpx;"
-      bindtap="stubVoice"
-    >🎤 按住说话（即将支持）</button>
+  <!-- Custom time -->
+  <view class="card" style="padding: 28rpx 28rpx; margin-bottom: 32rpx;">
+    <view class="section-title">记录时间</view>
+    <view class="chip-row" style="margin-bottom: 16rpx;">
+      <text
+        wx:for="{{dateOffsets}}"
+        wx:key="value"
+        class="{{item.chipClass}}"
+        data-offset="{{item.value}}"
+        bindtap="pickDateOffset"
+      >{{item.label}}</text>
+    </view>
+    <picker mode="time" value="{{customTime}}" bindchange="onTimeChange">
+      <view class="time-picker-btn">{{customTime}}</view>
+    </picker>
   </view>
 
   <!-- Parse result -->
-  <view wx:if="{{parsed.type}}" style="margin-top: 32rpx;">
+  <view wx:if="{{parsed.type}}" style="margin-top: 0;">
     <view style="font-size: 24rpx; color: #7E9078; margin-bottom: 12rpx;">{{voiceHint || '识别结果，请确认'}}</view>
     <view class="voice-result-card">
       <view class="big">{{resultDesc}}</view>
       <view class="small" wx:if="{{parsed.note}}">备注：{{parsed.note}}</view>
-      <view class="small" wx:else>识别时间 刚刚</view>
+      <view class="small" wx:if="{{parsed.dateOffsetDays < 0}}">
+        {{parsed.dateOffsetDays === -1 ? '昨天' : '前天'}}
+        <text wx:if="{{parsed.hour !== undefined}}">{{parsed.hour}}:{{parsed.minute < 10 ? '0'+parsed.minute : parsed.minute}}</text>
+      </view>
     </view>
 
     <view style="display:flex; gap: 16rpx;">
@@ -44,7 +98,7 @@
     </view>
   </view>
 
-  <!-- Unknown parse result -->
+  <!-- Unknown result -->
   <view wx:if="{{parsed.type === 'unknown'}}" style="margin-top: 32rpx; text-align:center;">
     <view class="empty">未能识别记录类型，请换个说法再试</view>
   </view>

@@ -1,0 +1,60 @@
+<view class="container">
+  <!-- Photo upload -->
+  <view class="section-title">拍下疫苗本（可选）</view>
+
+  <view wx:if="{{!imagePath}}" class="vaccine-upload-box" bindtap="takePhoto">
+    <view class="vaccine-upload-icon">📷</view>
+    <view class="vaccine-upload-text">点击拍照或选择照片</view>
+  </view>
+
+  <view wx:if="{{imagePath}}" class="vaccine-photo-preview">
+    <image class="vaccine-photo" src="{{imagePath}}" mode="aspectFill" />
+    <view wx:if="{{uploading}}" class="vaccine-uploading-hint">⏳ 上传中…</view>
+    <button wx:if="{{!uploading}}" class="btn btn-danger" style="margin-top:16rpx; width:100%;" bindtap="removePhoto">删除照片</button>
+  </view>
+
+  <!-- Divider -->
+  <view class="vaccine-divider">
+    <view class="vaccine-divider-line"></view>
+    <text class="vaccine-divider-text">或者</text>
+    <view class="vaccine-divider-line"></view>
+  </view>
+
+  <!-- Text input -->
+  <view class="section-title">输入疫苗名称</view>
+  <input
+    class="vaccine-name-input"
+    placeholder="例如：乙肝疫苗、百白破…"
+    value="{{vaccineName}}"
+    bindinput="onVaccineName"
+    maxlength="50"
+  />
+
+  <!-- Date/time -->
+  <view class="section-title" style="margin-top: 32rpx;">记录时间</view>
+  <view class="chip-row" style="margin-bottom: 16rpx;">
+    <text
+      wx:for="{{dateOffsets}}"
+      wx:key="value"
+      class="{{item.chipClass}}"
+      data-offset="{{item.value}}"
+      bindtap="pickDateOffset"
+    >{{item.label}}</text>
+  </view>
+  <picker mode="time" value="{{customTime}}" bindchange="onTimeChange">
+    <view class="time-picker-btn">{{customTime}}</view>
+  </picker>
+
+  <!-- Note -->
+  <view class="section-title" style="margin-top: 28rpx;">备注（选填）</view>
+  <textarea
+    class="note-textarea"
+    placeholder="例如：在大腿外侧打的"
+    value="{{note}}"
+    bindinput="onNote"
+    auto-height
+    maxlength="200"
+  />
+
+  <button class="btn btn-primary" style="width:100%; margin-top: 48rpx;" bindtap="save">✅ 记录完成</button>
+</view>
