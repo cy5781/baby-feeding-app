@@ -85,11 +85,8 @@
     <view style="font-size: 24rpx; color: #7E9078; margin-bottom: 12rpx;">{{voiceHint || '识别结果，请确认'}}</view>
     <view class="voice-result-card">
       <view class="big">{{resultDesc}}</view>
+      <view class="small" wx:if="{{recognizedTimeText}}">⏰ {{recognizedTimeText}}</view>
       <view class="small" wx:if="{{parsed.note}}">备注：{{parsed.note}}</view>
-      <view class="small" wx:if="{{parsed.dateOffsetDays < 0}}">
-        {{parsed.dateOffsetDays === -1 ? '昨天' : '前天'}}
-        <text wx:if="{{parsed.hour !== undefined}}">{{parsed.hour}}:{{parsed.minute < 10 ? '0'+parsed.minute : parsed.minute}}</text>
-      </view>
     </view>
 
     <view style="display:flex; gap: 16rpx;">

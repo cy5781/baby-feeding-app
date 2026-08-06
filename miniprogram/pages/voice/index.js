@@ -86,7 +86,8 @@ function buildDateOffsets(selected) {
   var offsets = [
     { value: 0, label: "今天" },
     { value: -1, label: "昨天" },
-    { value: -2, label: "前天" }
+    { value: -2, label: "前天" },
+    { value: -3, label: "3天前" }
   ]
   return offsets.map(function (o) {
     o.chipClass = o.value === selected ? "chip chip-active" : "chip"
@@ -135,12 +136,37 @@ function describe(parsed) {
   return ""
 }
 
+// Format recognized date+time for display
+function formatRecognizedTime(parsed) {
+  if (!parsed || typeof parsed !== "object") return ""
+
+  var dateLabels = { "0": "今天", "-1": "昨天", "-2": "前天", "-3": "3天前" }
+  var datePart = ""
+  if (typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays)) {
+    var key = String(parsed.dateOffsetDays)
+    datePart = dateLabels[key] || ""
+  }
+
+  var timePart = ""
+  if (typeof parsed.hour === "number" && isFinite(parsed.hour)) {
+    var h = parsed.hour
+    var m = (typeof parsed.minute === "number" && isFinite(parsed.minute)) ? parsed.minute : 0
+    timePart = (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
+  }
+
+  if (datePart && timePart) return datePart + " " + timePart
+  if (timePart) return "今天 " + timePart
+  if (datePart) return datePart
+  return ""
+}
+
 Page({
   data: {
     text: "",
     parsed: {},
     resultDesc: "",
     voiceHint: "",
+    recognizedTimeText: "",
     parsing: false,
     parseBtnText: "🔍 解析",
 
@@ -292,14 +318,16 @@ Page({
         that.setData({
           parsed: fallback,
           resultDesc: describe(fallback),
-          voiceHint: fallback.type ? "已完成解析，请确认后保存" : "未识别，请换个说法"
+          voiceHint: fallback.type ? "已完成解析，请确认后保存" : "未识别，请换个说法",
+          recognizedTimeText: formatRecognizedTime(fallback)
         })
         if (!fallback.type) wx.showToast({ title: "未识别，请换个说法", icon: "none" })
       } else {
         that.setData({
           parsed: parsed,
           resultDesc: describe(parsed),
-          voiceHint: "已完成解析，请确认后保存"
+          voiceHint: "已完成解析，请确认后保存",
+          recognizedTimeText: formatRecognizedTime(parsed)
         })
       }
     }).catch(function () {
@@ -307,7 +335,8 @@ Page({
       that.setData({
         parsed: parsed,
         resultDesc: describe(parsed),
-        voiceHint: parsed.type ? "已完成解析（离线），请确认" : "未识别，请换个说法"
+        voiceHint: parsed.type ? "已完成解析（离线），请确认" : "未识别，请换个说法",
+        recognizedTimeText: formatRecognizedTime(parsed)
       })
       if (!parsed.type) wx.showToast({ title: "未识别，请换个说法", icon: "none" })
     }).finally(function () {
@@ -317,7 +346,7 @@ Page({
   },
 
   clearResult: function () {
-    this.setData({ parsed: {}, resultDesc: "", voiceHint: "", text: "" })
+    this.setData({ parsed: {}, resultDesc: "", voiceHint: "", recognizedTimeText: "", text: "" })
   },
 
   /* ---- Custom time ---- */

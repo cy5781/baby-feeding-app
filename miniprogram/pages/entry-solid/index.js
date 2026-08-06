@@ -21,7 +21,8 @@ function buildDateOffsets(selected) {
   var offsets = [
     { value: 0, label: "今天" },
     { value: -1, label: "昨天" },
-    { value: -2, label: "前天" }
+    { value: -2, label: "前天" },
+    { value: -3, label: "3天前" }
   ]
   return offsets.map(function (o) {
     o.chipClass = o.value === selected ? "chip chip-active" : "chip"

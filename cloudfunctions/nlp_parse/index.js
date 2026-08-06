@@ -71,7 +71,7 @@ function normalizeResult(obj) {
   }
 
   const offset = parseInt(obj.dateOffsetDays, 10)
-  if (Number.isFinite(offset) && offset >= -2 && offset <= 0) out.dateOffsetDays = offset
+  if (Number.isFinite(offset) && offset >= -3 && offset <= 0) out.dateOffsetDays = offset
 
   const hour = parseInt(obj.hour, 10)
   const minute = parseInt(obj.minute, 10)
@@ -111,7 +111,7 @@ exports.main = async (event) => {
     '  "minute": 30,',
     '  "note": ""',
     "}",
-    "dateOffsetDays 只允许 0(今天)/-1(昨天)/-2(前天)，没提到就用0。",
+    "dateOffsetDays 只允许 0(今天)/-1(昨天)/-2(前天)/-3(3天前)，没提到就用0。",
     "hour/minute 如果用户没说时间就省略，不要胡编。",
     "如果用户提到多种辅食，solidItem 用顿号连接，如"米糊、蛋黄"。",
     "中文数字要转成阿拉伯数字（如"一百四十五"→145，"九点半"→9:30）。",
