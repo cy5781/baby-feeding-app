@@ -68,6 +68,14 @@ module.exports = {
   dailySummary: function (dateKey) { return call("summary_daily", { dateKey: dateKey }) },
   statsRange: function (days) { return call("stats_range", { days: days }) },
   deleteEvent: function (id) { return call("event_delete", { id: id }) },
+  updateEvent: function (id, payload) {
+    return ensureFamily().then(function () {
+      var data = {}
+      for (var k in payload) data[k] = payload[k]
+      data.id = id
+      return call("event_update", data)
+    })
+  },
   clearAll: function () { return call("event_clear_all", {}) },
   nlpParse: function (text) { return call("nlp_parse", { text: text }) }
 }

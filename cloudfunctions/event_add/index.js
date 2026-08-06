@@ -27,6 +27,7 @@ exports.main = async (event) => {
 
   if (type === "milk") {
     data.milkAmount = parseInt(event.milkAmount, 10)
+    data.feedMethod = String(event.feedMethod || "").trim()
     if (!data.milkAmount) throw new Error("milkAmount_required")
   } else if (type === "solid") {
     data.solidItem = String(event.solidItem || "").trim()

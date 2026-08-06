@@ -1,14 +1,29 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
-var todayKey = dateUtils.todayKey
 var formatDateKey = dateUtils.formatDateKey
 var MILK_QUICK = require("../../utils/constants").MILK_QUICK
+
+var FEED_METHODS = [
+  { key: "母乳", label: "🤱 母乳" },
+  { key: "混合", label: "🔄 混合" },
+  { key: "奶粉", label: "🍼 奶粉" }
+]
 
 function buildQuick(amount) {
   return MILK_QUICK.map(function (v) {
     return {
       value: v,
       chipClass: v === amount ? "chip chip-active" : "chip"
+    }
+  })
+}
+
+function buildMethods(selected) {
+  return FEED_METHODS.map(function (m) {
+    return {
+      key: m.key,
+      label: m.label,
+      chipClass: m.key === selected ? "chip chip-active" : "chip"
     }
   })
 }
@@ -43,14 +58,64 @@ function buildDateTime(offset, timeStr) {
   return { dateKey: formatDateKey(d), ts: d.getTime() }
 }
 
+function computeDateOffset(dateKey) {
+  var d = new Date()
+  var today = formatDateKey(d)
+  d.setDate(d.getDate() - 1)
+  var yesterday = formatDateKey(d)
+  d.setDate(d.getDate() - 1)
+  var day2 = formatDateKey(d)
+  d.setDate(d.getDate() - 1)
+  var day3 = formatDateKey(d)
+  if (dateKey === today) return 0
+  if (dateKey === yesterday) return -1
+  if (dateKey === day2) return -2
+  if (dateKey === day3) return -3
+  return 0
+}
+
+function timeFromTs(ts) {
+  var d = new Date(ts)
+  var h = d.getHours()
+  var m = d.getMinutes()
+  return (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
+}
+
 Page({
   data: {
     amount: 130,
+    feedMethod: "",
+    methods: buildMethods(""),
     note: "",
     quick: buildQuick(130),
     dateOffset: 0,
     dateOffsets: buildDateOffsets(0),
-    customTime: defaultTime()
+    customTime: defaultTime(),
+    editId: ""
+  },
+
+  onLoad: function (options) {
+    if (!options || !options.editId) return
+    var editId = options.editId
+    var amount = parseInt(options.milkAmount, 10) || 130
+    var feedMethod = decodeURIComponent(options.feedMethod || "")
+    var note = decodeURIComponent(options.note || "")
+    var dateKey = options.dateKey || ""
+    var ts = parseInt(options.ts, 10) || 0
+    var offset = computeDateOffset(dateKey)
+    var timeStr = ts ? timeFromTs(ts) : defaultTime()
+
+    this.setData({
+      editId: editId,
+      amount: amount,
+      feedMethod: feedMethod,
+      methods: buildMethods(feedMethod),
+      quick: buildQuick(amount),
+      note: note,
+      dateOffset: offset,
+      dateOffsets: buildDateOffsets(offset),
+      customTime: timeStr
+    })
   },
 
   step: function (e) {
@@ -62,6 +127,11 @@ Page({
   pick: function (e) {
     var amount = parseInt(e.currentTarget.dataset.val, 10)
     this.setData({ amount: amount, quick: buildQuick(amount) })
+  },
+
+  pickMethod: function (e) {
+    var key = e.currentTarget.dataset.key
+    this.setData({ feedMethod: key, methods: buildMethods(key) })
   },
 
   onAmount: function (e) {
@@ -89,18 +159,30 @@ Page({
       return
     }
     var dt = buildDateTime(this.data.dateOffset, this.data.customTime)
-    var that = this
-    api.addEvent({
+    var payload = {
       type: "milk",
       dateKey: dt.dateKey,
       ts: dt.ts,
       milkAmount: amount,
+      feedMethod: this.data.feedMethod || "",
       note: this.data.note || ""
-    }).then(function () {
-      wx.showToast({ title: "已保存", icon: "success" })
-      wx.navigateBack()
-    }).catch(function (err) {
-      wx.showToast({ title: api.friendlyMessage(err, "保存失败"), icon: "none" })
-    })
+    }
+    var that = this
+
+    if (this.data.editId) {
+      api.updateEvent(this.data.editId, payload).then(function () {
+        wx.showToast({ title: "已更新", icon: "success" })
+        wx.navigateBack()
+      }).catch(function (err) {
+        wx.showToast({ title: api.friendlyMessage(err, "更新失败"), icon: "none" })
+      })
+    } else {
+      api.addEvent(payload).then(function () {
+        wx.showToast({ title: "已保存", icon: "success" })
+        wx.navigateBack()
+      }).catch(function (err) {
+        wx.showToast({ title: api.friendlyMessage(err, "保存失败"), icon: "none" })
+      })
+    }
   }
 })

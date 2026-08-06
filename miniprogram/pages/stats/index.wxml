@@ -16,25 +16,15 @@
   <view class="{{weightOverlayClass}}" bindtap="hideWeight">
     <view class="weight-sheet" catchtap="">
       <view class="med-sheet-title">记录体重</view>
-
       <view style="display:flex; align-items:center; justify-content:center; gap: 8rpx; margin-bottom: 24rpx;">
-        <input
-          class="weight-input"
-          type="digit"
-          placeholder="0.0"
-          value="{{weightKg}}"
-          bindinput="onWeightInput"
-          focus="{{showWeightInput}}"
-        />
+        <input class="weight-input" type="digit" placeholder="0.0" value="{{weightKg}}" bindinput="onWeightInput" focus="{{showWeightInput}}" />
         <text style="font-size:36rpx; font-weight:700; color:#33422E;">kg</text>
       </view>
-
       <view style="margin-bottom: 24rpx;">
         <picker mode="time" value="{{weightTime}}" bindchange="onWeightTimeChange">
           <view class="time-picker-btn">{{weightTime}}</view>
         </picker>
       </view>
-
       <view style="display:flex; gap: 16rpx;">
         <button class="btn" style="flex:1;" bindtap="hideWeight">取消</button>
         <button class="btn btn-primary" style="flex:1;" bindtap="saveWeight">保存</button>
@@ -50,6 +40,23 @@
       <view class="chip">🥣 辅食 {{today.solidCount || 0}}次</view>
       <view class="chip">💩 便便 {{today.poopCount || 0}}次</view>
     </view>
+  </view>
+
+  <!-- Weight growth chart -->
+  <view class="card" style="margin-bottom: 28rpx;" wx:if="{{weightData.length > 0}}">
+    <view style="font-size: 28rpx; font-weight: 700; color: #7E9078; margin-bottom: 16rpx;">📈 体重变化</view>
+    <scroll-view scroll-x="{{true}}" style="white-space:nowrap;">
+      <view style="display:inline-flex; gap: 20rpx;">
+        <view
+          wx:for="{{weightData}}"
+          wx:key="dateKey"
+          style="text-align:center; min-width:140rpx; padding:16rpx; background:#F5FAF3; border-radius:16rpx;"
+        >
+          <view style="font-size:22rpx; color:#7E9078;">{{item.dateKey}}</view>
+          <view style="font-size:36rpx; font-weight:800; color:#4F9668;">{{item.weightKg}}kg</view>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 
   <!-- Range toggle -->
@@ -77,4 +84,17 @@
   </view>
 
   <view class="empty" wx:else>暂无数据</view>
+
+  <!-- Vaccine calendar -->
+  <view class="section-title" style="margin-top: 40rpx;">💉 疫苗日历</view>
+  <view class="vaccine-list" wx:if="{{vaccines.length > 0}}">
+    <view wx:for="{{vaccines}}" wx:key="name" class="vaccine-row">
+      <text class="vaccine-status">{{item.status === 'done' ? '✅' : '⏳'}}</text>
+      <view style="flex:1;">
+        <text style="font-size:26rpx; font-weight:700; color:#33422E;">{{item.name}}</text>
+        <text style="font-size:22rpx; color:#7E9078; margin-left:12rpx;">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="empty" wx:else style="padding-top:16rpx;">记录疫苗后显示接种日历</view>
 </view>

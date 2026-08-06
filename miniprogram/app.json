@@ -10,6 +10,7 @@
     "pages/entry-poop/index",
     "pages/entry-vaccine/index",
     "pages/entry-illness/index",
+    "pages/entry-sleep/index",
     "pages/voice/index"
   ],
   "window": {
@@ -39,7 +40,7 @@
       },
       {
         "pagePath": "pages/me/index",
-        "text": "我的"
+        "text": "家庭"
       }
     ]
   }

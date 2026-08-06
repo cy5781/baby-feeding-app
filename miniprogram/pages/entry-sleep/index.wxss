@@ -1,0 +1,48 @@
+/* Large sleep cards */
+.sleep-card {
+  border: none;
+  border-radius: 28rpx;
+  padding: 48rpx 20rpx;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(51,66,46,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.sleep-card:active {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+.sleep-card-selected {
+  border: 4rpx solid #33422E;
+  box-shadow: 0 6px 24px rgba(51,66,46,0.18);
+}
+
+.sleep-card-label {
+  font-size: 34rpx;
+  font-weight: 800;
+  display: block;
+}
+
+.sleep-card-in {
+  background: #DCEFDA;
+  color: #2C6B40;
+}
+
+.sleep-card-out {
+  background: #FBEBD2;
+  color: #8A5A16;
+}
+
+.note-textarea {
+  background: #fff;
+  border: 2rpx solid #D3E6CB;
+  border-radius: 20rpx;
+  padding: 22rpx 24rpx;
+  font-size: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 80rpx;
+}

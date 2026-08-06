@@ -5,8 +5,9 @@ const { TIME_FILTERS } = require("../../utils/constants")
 function mapEvent(e) {
   var time = formatTimeHM(new Date(e.ts))
   if (e.type === "milk") {
+    var fm = e.feedMethod || "奶粉"
     return { _id: e._id, type: "milk", time: time, ts: e.ts,
-      desc: "奶粉 " + e.milkAmount + "ml", meta: e.note || "" }
+      desc: fm + " " + e.milkAmount + "ml", meta: e.note || "" }
   }
   if (e.type === "solid") {
     var p = e.solidPortion ? "（" + e.solidPortion + "）" : ""
@@ -69,12 +70,21 @@ Page({
     medSummary: "",
     vaccineCount: 0,
     illnessCount: 0,
+    yesterdayText: "",
+    lastMilkReminder: "",
+    lastMilkCardClass: "last-feed-card",
+    rawEvents: [],
+    showEditSheet: false,
+    editSheetClass: "med-sheet-overlay",
+    editingItem: null,
     filters: buildFilters("all"),
     filterActive: "all",
     allItems: [],
     filteredItems: [],
     showMedSheet: false,
-    medSheetOverlayClass: "med-sheet-overlay"
+    medSheetOverlayClass: "med-sheet-overlay",
+    showOnboarding: false,
+    onboardingClass: "onboarding-overlay"
   },
 
   onShow: function () {
@@ -85,34 +95,60 @@ Page({
         weekday: weekdayCN(dateKey)
       })
       this.loadData()
+      // Onboarding check
+      var done = wx.getStorageSync("onboarding_done_v2")
+      if (!done) {
+        this.setData({ showOnboarding: true, onboardingClass: "onboarding-overlay active" })
+      }
     } catch (e) {
       console.error("onShow error:", e)
     }
   },
 
+  closeOnboarding: function () {
+    wx.setStorageSync("onboarding_done_v2", true)
+    this.setData({ showOnboarding: false, onboardingClass: "onboarding-overlay" })
+  },
+
   loadData: function () {
     var dateKey = todayKey()
+    var yesterdayKey = dateUtils.addDays(dateKey, -1)
     var that = this
     Promise.all([
       api.dailySummary(dateKey),
-      api.listByDate(dateKey)
+      api.listByDate(dateKey),
+      api.dailySummary(yesterdayKey)
     ]).then(function (results) {
       var summary = results[0]
       var list = results[1]
+      var yesterdaySummary = results[2]
       var meds = (summary && summary.meds) || {}
+      var rawEvents = (list && list.items) || []
 
       var lastMilk = null
+      var reminder = ""
+      var cardClass = "last-feed-card"
       if (summary && summary.lastMilk) {
+        var elapsed = Date.now() - summary.lastMilk.ts
+        var progress = Math.min(100, Math.round(elapsed / (3 * 3600000) * 100))
         lastMilk = {
           ts: summary.lastMilk.ts,
           time: formatTimeHM(new Date(summary.lastMilk.ts)),
           ago: timeAgoCN(summary.lastMilk.ts),
           amount: summary.lastMilk.milkAmount,
-          progress: Math.min(100, Math.round((Date.now() - summary.lastMilk.ts) / (3 * 3600000) * 100))
+          progress: progress
+        }
+        // Feeding reminder: >3h → warn
+        if (elapsed > 3 * 3600000) {
+          reminder = "⚠️ 宝宝可能该喝奶了"
+          cardClass = "last-feed-card last-feed-card-warn"
+        } else if (elapsed > 2.5 * 3600000) {
+          reminder = "⏰ 快该喝奶了"
+          cardClass = "last-feed-card last-feed-card-hint"
         }
       }
 
-      var allItems = (list.items || []).map(mapEvent)
+      var allItems = rawEvents.map(mapEvent)
       var medNames = []
       if (meds.AD) medNames.push("AD")
       if (meds.D3) medNames.push("D3")
@@ -120,6 +156,16 @@ Page({
       if (meds.CALCIUM) medNames.push("钙")
       var medCount = medNames.length
       var medSummary = medCount > 0 ? medNames.join("·") : ""
+
+      // Yesterday summary text
+      var yesterdayText = ""
+      if (yesterdaySummary) {
+        var parts = []
+        if (yesterdaySummary.milkCount > 0) parts.push("🍼" + yesterdaySummary.milkCount + "次·" + (yesterdaySummary.milkTotal || 0) + "ml")
+        if (yesterdaySummary.solidCount > 0) parts.push("🥣" + yesterdaySummary.solidCount + "次")
+        if (yesterdaySummary.poopCount > 0) parts.push("💩" + yesterdaySummary.poopCount + "次")
+        if (parts.length > 0) yesterdayText = "昨天 " + parts.join("  ")
+      }
 
       that.setData({
         summaryMilkCount: summary ? (summary.milkCount || 0) : 0,
@@ -131,7 +177,11 @@ Page({
         vaccineCount: summary ? (summary.vaccineCount || 0) : 0,
         illnessCount: summary ? (summary.illnessCount || 0) : 0,
         lastMilk: lastMilk,
-        allItems: allItems
+        lastMilkReminder: reminder,
+        lastMilkCardClass: cardClass,
+        yesterdayText: yesterdayText,
+        allItems: allItems,
+        rawEvents: rawEvents
       })
       that.applyFilter()
     }).catch(function (err) {
@@ -141,7 +191,8 @@ Page({
           summarySolidCount: 0, summaryPoopCount: 0,
           medCount: 0, medSummary: "",
           vaccineCount: 0, illnessCount: 0,
-          lastMilk: null, allItems: [], filteredItems: []
+          yesterdayText: "", lastMilkReminder: "",
+          lastMilk: null, allItems: [], filteredItems: [], rawEvents: []
         })
         return
       }
@@ -187,10 +238,12 @@ Page({
     this.applyFilter()
   },
 
-  goMilk: function () { wx.navigateTo({ url: "/pages/entry-milk/index" }) },
-  goSolid: function () { wx.navigateTo({ url: "/pages/entry-solid/index" }) },
-  goPoop: function () { wx.navigateTo({ url: "/pages/entry-poop/index" }) },
-  goVoice: function () { wx.navigateTo({ url: "/pages/voice/index" }) },
+  goMilk: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-milk/index" }) },
+  goSolid: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-solid/index" }) },
+  goPoop: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-poop/index" }) },
+  goSleep: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-sleep/index" }) },
+  goWeight: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/stats/index" }) },
+  goVoice: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/voice/index" }) },
 
   // Med button now shows ActionSheet
   goMed: function () {
@@ -212,9 +265,56 @@ Page({
     wx.navigateTo({ url: "/pages/entry-illness/index" })
   },
 
-  onDeleteItem: function (e) {
+  onItemAction: function (e) {
     var id = e.currentTarget.dataset.id
     var that = this
+    // Find raw event data
+    var rawEvents = this.data.rawEvents
+    var event = null
+    for (var i = 0; i < rawEvents.length; i++) {
+      if (rawEvents[i]._id === id) { event = rawEvents[i]; break }
+    }
+    this.setData({ editingItem: event, showEditSheet: true, editSheetClass: "med-sheet-overlay active" })
+  },
+
+  closeEditSheet: function () {
+    this.setData({ showEditSheet: false, editSheetClass: "med-sheet-overlay", editingItem: null })
+  },
+
+  doEdit: function () {
+    var event = this.data.editingItem
+    if (!event) return
+    this.setData({ showEditSheet: false, editSheetClass: "med-sheet-overlay" })
+
+    // Navigate to the appropriate entry page with edit params
+    var baseParams = "?editId=" + (event._id || "") + "&dateKey=" + (event.dateKey || "") + "&note=" + encodeURIComponent(event.note || "")
+    var url = ""
+    if (event.type === "milk") {
+      url = "/pages/entry-milk/index" + baseParams + "&milkAmount=" + (event.milkAmount || 130) + "&feedMethod=" + encodeURIComponent(event.feedMethod || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "solid") {
+      url = "/pages/entry-solid/index" + baseParams + "&solidItem=" + encodeURIComponent(event.solidItem || "") + "&solidPortion=" + encodeURIComponent(event.solidPortion || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "med") {
+      url = "/pages/entry-med/index" + baseParams + "&medName=" + encodeURIComponent(event.medName || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "poop") {
+      url = "/pages/entry-poop/index" + baseParams + "&poopType=" + encodeURIComponent(event.poopType || "") + "&poopColor=" + encodeURIComponent(event.poopColor || "") + "&poopAmount=" + encodeURIComponent(event.poopAmount || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "sleep") {
+      url = "/pages/entry-sleep/index" + baseParams + "&sleepEvent=" + encodeURIComponent(event.sleepEvent || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "vaccine") {
+      url = "/pages/entry-vaccine/index" + baseParams + "&subType=" + encodeURIComponent(event.subType || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "illness") {
+      url = "/pages/entry-illness/index" + baseParams + "&subType=" + encodeURIComponent(event.subType || "") + "&ts=" + (event.ts || "")
+    } else if (event.type === "weight") {
+      url = "/pages/stats/index"
+    }
+    if (url) wx.navigateTo({ url: url })
+  },
+
+  doDelete: function () {
+    var event = this.data.editingItem
+    if (!event) return
+    var id = event._id
+    var that = this
+    this.setData({ showEditSheet: false, editSheetClass: "med-sheet-overlay", editingItem: null })
     wx.showModal({
       title: "删除记录",
       content: "确定删除这条记录？",

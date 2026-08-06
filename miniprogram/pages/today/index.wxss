@@ -10,6 +10,14 @@
   box-shadow: 0 6px 18px rgba(51,66,46,0.15);
   margin-bottom: 32rpx;
 }
+.last-feed-card-warn {
+  background: #E38A72;
+  box-shadow: 0 6px 18px rgba(227,138,114,0.25);
+}
+.last-feed-card-hint {
+  background: #E3A857;
+  box-shadow: 0 6px 18px rgba(227,168,87,0.25);
+}
 .last-feed-icon {
   width: 80rpx;
   height: 80rpx;
@@ -48,8 +56,8 @@
 /* Quick action grid */
 .quick-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20rpx;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16rpx;
   margin-bottom: 32rpx;
 }
 
@@ -57,14 +65,14 @@
   width: 100%;
   border: none;
   border-radius: 28rpx;
-  padding: 36rpx 20rpx;
+  padding: 28rpx 12rpx;
   text-align: center;
   box-shadow: 0 4px 16px rgba(51,66,46,0.08);
   line-height: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14rpx;
+  gap: 10rpx;
 }
 .quick-btn:active {
   opacity: 0.85;
@@ -72,12 +80,12 @@
 }
 
 .quick-icon {
-  font-size: 48rpx;
+  font-size: 40rpx;
   display: block;
 }
 
 .quick-label {
-  font-size: 30rpx;
+  font-size: 26rpx;
   font-weight: 700;
   display: block;
 }
@@ -97,6 +105,14 @@
 .quick-med {
   background: #DCEEE9;
   color: #2C6B5C;
+}
+.quick-sleep {
+  background: #DCEFDA;
+  color: #2C6B40;
+}
+.quick-weight {
+  background: #EDE4D6;
+  color: #6B4A28;
 }
 
 /* Timeline */
@@ -224,6 +240,36 @@
 /* Extra bottom space for mic dock */
 .page-bottom {
   height: 180rpx;
+}
+
+/* ===== Onboarding ===== */
+.onboarding-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(30,26,20,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+.onboarding-overlay.active {
+  display: flex;
+}
+
+.onboarding-card {
+  width: 85%;
+  background: #fff;
+  border-radius: 32rpx;
+  padding: 48rpx 32rpx 36rpx;
+  box-shadow: 0 12px 48px rgba(51,66,46,0.2);
+}
+
+.onboarding-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #33422E;
+  text-align: center;
+  margin-bottom: 12rpx;
 }
 
 /* Date bar */

@@ -48,3 +48,26 @@
   text-align: center;
   color: #33422E;
 }
+
+/* Vaccine calendar */
+.vaccine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.vaccine-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 20rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  border: 1rpx solid #D3E6CB;
+}
+
+.vaccine-status {
+  font-size: 28rpx;
+  width: 50rpx;
+  text-align: center;
+}

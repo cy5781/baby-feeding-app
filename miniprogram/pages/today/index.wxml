@@ -9,7 +9,7 @@
   </view>
 
   <!-- Last feed card -->
-  <view class="last-feed-card" wx:if="{{lastMilk}}">
+  <view class="{{lastMilkCardClass}}" wx:if="{{lastMilk}}">
     <view class="last-feed-icon">🍼</view>
     <view style="flex:1;">
       <view class="last-feed-label">距上次喂奶</view>
@@ -17,6 +17,7 @@
       <view class="last-feed-progress">
         <view class="last-feed-progress-bar" style="width: {{lastMilk.progress}}%;"></view>
       </view>
+      <view wx:if="{{lastMilkReminder}}" style="font-size:24rpx; margin-top:6rpx; font-weight:700;">{{lastMilkReminder}}</view>
     </view>
   </view>
 
@@ -37,7 +38,15 @@
     </button>
     <button class="quick-btn quick-med" bindtap="goMed">
       <text class="quick-icon">💊</text>
-      <text class="quick-label">用药</text>
+      <text class="quick-label">健康</text>
+    </button>
+    <button class="quick-btn quick-sleep" bindtap="goSleep">
+      <text class="quick-icon">😴</text>
+      <text class="quick-label">睡眠</text>
+    </button>
+    <button class="quick-btn quick-weight" bindtap="goWeight">
+      <text class="quick-icon">⚖️</text>
+      <text class="quick-label">体重</text>
     </button>
   </view>
 
@@ -55,6 +64,7 @@
         </text>
       </view>
     </view>
+    <view wx:if="{{yesterdayText}}" style="font-size:24rpx; color:#7E9078; margin-top:14rpx; text-align:center;">{{yesterdayText}}</view>
   </view>
 
   <!-- Today timeline -->
@@ -82,7 +92,7 @@
         <text class="t-time">{{item.time}}</text>
         <text class="t-main">{{item.desc}}</text>
       </view>
-      <button class="t-more" data-id="{{item._id}}" bindtap="onDeleteItem">···</button>
+      <button class="t-more" data-id="{{item._id}}" bindtap="onItemAction">···</button>
     </view>
   </view>
 
@@ -90,6 +100,24 @@
   <view class="empty" wx:else>这段时间还没有记录</view>
 
   <view class="page-bottom"></view>
+</view>
+
+<!-- Edit/Delete ActionSheet -->
+<view class="{{editSheetClass}}" bindtap="closeEditSheet">
+  <view class="med-sheet" catchtap="">
+    <view class="med-sheet-title">操作记录</view>
+    <button class="med-sheet-btn med-sheet-drug" bindtap="doEdit">
+      <text class="med-sheet-icon">✏️</text>
+      <text class="med-sheet-label">编辑</text>
+      <text class="med-sheet-hint">修改这条记录的内容</text>
+    </button>
+    <button class="med-sheet-btn med-sheet-illness" bindtap="doDelete">
+      <text class="med-sheet-icon">🗑️</text>
+      <text class="med-sheet-label">删除</text>
+      <text class="med-sheet-hint">删除后不可恢复</text>
+    </button>
+    <button class="med-sheet-cancel" bindtap="closeEditSheet">取消</button>
+  </view>
 </view>
 
 <!-- Med ActionSheet -->
@@ -112,6 +140,29 @@
       <text class="med-sheet-hint">记录宝宝症状</text>
     </button>
     <button class="med-sheet-cancel" bindtap="closeMedSheet">取消</button>
+  </view>
+</view>
+
+<!-- Onboarding guide -->
+<view class="{{onboardingClass}}" catchtap="">
+  <view class="onboarding-card">
+    <view class="onboarding-title">👋 欢迎使用宝宝喂养记录</view>
+    <view style="font-size:26rpx; color:#7E9078; margin-bottom:32rpx; text-align:center;">爷爷奶奶也能轻松使用的喂养记录本</view>
+    <view style="display:flex; flex-direction:column; gap:24rpx; margin-bottom:36rpx;">
+      <view style="display:flex; align-items:center; gap:16rpx;">
+        <view style="width:56rpx; height:56rpx; border-radius:50%; background:#DCEFDA; display:flex; align-items:center; justify-content:center; font-size:28rpx; flex-shrink:0;">1</view>
+        <view style="flex:1; font-size:26rpx; color:#33422E;">点击下方大按钮，一键记录</view>
+      </view>
+      <view style="display:flex; align-items:center; gap:16rpx;">
+        <view style="width:56rpx; height:56rpx; border-radius:50%; background:#FBEBD2; display:flex; align-items:center; justify-content:center; font-size:28rpx; flex-shrink:0;">2</view>
+        <view style="flex:1; font-size:26rpx; color:#33422E;">按住麦克风说话，自动识别内容</view>
+      </view>
+      <view style="display:flex; align-items:center; gap:16rpx;">
+        <view style="width:56rpx; height:56rpx; border-radius:50%; background:#DCEEE9; display:flex; align-items:center; justify-content:center; font-size:28rpx; flex-shrink:0;">3</view>
+        <view style="flex:1; font-size:26rpx; color:#33422E;">记错了可以点 ··· 编辑或删除</view>
+      </view>
+    </view>
+    <button class="btn btn-primary" style="width:100%;" bindtap="closeOnboarding">知道了，开始记录</button>
   </view>
 </view>
 

@@ -24,6 +24,17 @@
     <button class="btn" style="width:100rpx; font-size:40rpx; padding:20rpx;" data-delta="10" bindtap="step">+</button>
   </view>
 
+  <view class="section-title">喂养方式</view>
+  <view class="chip-row" style="margin-bottom: 28rpx;">
+    <text
+      wx:for="{{methods}}"
+      wx:key="key"
+      class="{{item.chipClass}}"
+      data-key="{{item.key}}"
+      bindtap="pickMethod"
+    >{{item.label}}</text>
+  </view>
+
   <view class="section-title">记录时间</view>
   <view class="chip-row" style="margin-bottom: 16rpx;">
     <text

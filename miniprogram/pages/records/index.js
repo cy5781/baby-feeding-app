@@ -4,7 +4,8 @@ const { todayKey, addDays, formatTimeHM, weekdayCN, monthDayCN } = require("../.
 function mapEvent(e) {
   var time = formatTimeHM(new Date(e.ts))
   if (e.type === "milk") {
-    return { _id: e._id, time: time, desc: "奶粉", amount: e.milkAmount + "ml", tag: e.note || "" }
+    var fm = e.feedMethod || "奶粉"
+    return { _id: e._id, time: time, desc: fm, amount: e.milkAmount + "ml", tag: e.note || "" }
   }
   if (e.type === "solid") {
     var p = e.solidPortion ? "（" + e.solidPortion + "）" : ""
