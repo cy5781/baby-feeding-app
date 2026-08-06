@@ -242,7 +242,7 @@ Page({
   goSolid: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-solid/index" }) },
   goPoop: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-poop/index" }) },
   goSleep: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/entry-sleep/index" }) },
-  goWeight: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/stats/index" }) },
+  goWeight: function () { wx.vibrateShort({ type: "light" }); wx.switchTab({ url: "/pages/stats/index" }) },
   goVoice: function () { wx.vibrateShort({ type: "light" }); wx.navigateTo({ url: "/pages/voice/index" }) },
 
   // Med button now shows ActionSheet

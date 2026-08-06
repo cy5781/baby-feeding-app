@@ -16,8 +16,8 @@
   <view class="{{weightOverlayClass}}" bindtap="hideWeight">
     <view class="weight-sheet" catchtap="">
       <view class="med-sheet-title">记录体重</view>
-      <view style="display:flex; align-items:center; justify-content:center; gap: 8rpx; margin-bottom: 24rpx;">
-        <input class="weight-input" type="digit" placeholder="0.0" value="{{weightKg}}" bindinput="onWeightInput" focus="{{showWeightInput}}" />
+      <view catchtap="" style="display:flex; align-items:center; justify-content:center; gap: 8rpx; margin-bottom: 24rpx;">
+        <input class="weight-input" type="digit" placeholder="0.0" value="{{weightKg}}" bindinput="onWeightInput" />
         <text style="font-size:36rpx; font-weight:700; color:#33422E;">kg</text>
       </view>
       <view style="margin-bottom: 24rpx;">
