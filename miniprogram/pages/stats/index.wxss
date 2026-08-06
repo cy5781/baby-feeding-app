@@ -20,16 +20,23 @@
 .weight-overlay {
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
-  background: rgba(30,26,20,0.45);
   display: none;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
   z-index: 200;
 }
 .weight-overlay.active {
   display: flex;
 }
 
+.weight-backdrop {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(30,26,20,0.45);
+}
+
 .weight-sheet {
+  position: relative;
   width: 100%;
   background: #F5FAF3;
   border-radius: 40rpx 40rpx 0 0;
