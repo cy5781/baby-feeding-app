@@ -65,7 +65,10 @@
 
   <!-- Custom time -->
   <view class="card" style="padding: 28rpx 28rpx; margin-bottom: 32rpx;">
-    <view class="section-title">记录时间</view>
+    <view class="section-title">
+      记录时间
+      <text wx:if="{{recognizedTimeText}}" style="font-size:22rpx; font-weight:400; color:#4F9668; margin-left:8rpx;">（语音识别）</text>
+    </view>
     <view class="chip-row" style="margin-bottom: 16rpx;">
       <text
         wx:for="{{dateOffsets}}"

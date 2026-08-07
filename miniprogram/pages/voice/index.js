@@ -323,12 +323,23 @@ Page({
         })
         if (!fallback.type) wx.showToast({ title: "未识别，请换个说法", icon: "none" })
       } else {
-        that.setData({
+        // Sync time picker with parsed time
+        var syncData = {
           parsed: parsed,
           resultDesc: describe(parsed),
           voiceHint: "已完成解析，请确认后保存",
           recognizedTimeText: formatRecognizedTime(parsed)
-        })
+        }
+        if (typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays)) {
+          syncData.dateOffset = parsed.dateOffsetDays
+          syncData.dateOffsets = buildDateOffsets(parsed.dateOffsetDays)
+        }
+        if (typeof parsed.hour === "number" && isFinite(parsed.hour)) {
+          var h = parsed.hour
+          var m = (typeof parsed.minute === "number" && isFinite(parsed.minute)) ? parsed.minute : 0
+          syncData.customTime = (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
+        }
+        that.setData(syncData)
       }
     }).catch(function () {
       var parsed = parseText(value)
