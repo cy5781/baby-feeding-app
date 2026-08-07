@@ -1,5 +1,10 @@
 const api = require("../../services/api")
-const { todayKey, formatTimeHM, weekdayCN, monthDayCN, timeAgoCN } = require("../../utils/date")
+var dateUtils = require("../../utils/date")
+var todayKey = dateUtils.todayKey
+var formatTimeHM = dateUtils.formatTimeHM
+var weekdayCN = dateUtils.weekdayCN
+var monthDayCN = dateUtils.monthDayCN
+var timeAgoCN = dateUtils.timeAgoCN
 const { TIME_FILTERS } = require("../../utils/constants")
 
 function mapEvent(e) {
