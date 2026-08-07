@@ -153,7 +153,7 @@ Page({
         }
       }
 
-      var allItems = rawEvents.map(mapEvent)
+      var allItems = rawEvents.map(mapEvent).reverse()
       var medNames = []
       if (meds.AD) medNames.push("AD")
       if (meds.D3) medNames.push("D3")
