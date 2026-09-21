@@ -44,6 +44,36 @@ function monthDayCN(dateKey) {
   return m + "月" + d + "日"
 }
 
+// dateKey for "N days from today" (offset 0 = today, -1 = yesterday)
+function offsetToDateKey(offset) {
+  var d = new Date()
+  d.setDate(d.getDate() + offset)
+  return formatDateKey(d)
+}
+
+// Days from today for a dateKey (0 = today, negative = past, positive = future)
+function dateKeyToOffset(dateKey) {
+  var parts = dateKey.split("-")
+  var d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10))
+  var now = new Date()
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  return Math.round((d.getTime() - today.getTime()) / 86400000)
+}
+
+// Timestamp for a dateKey + "HH:mm" (local time)
+function dateKeyToTs(dateKey, timeStr) {
+  var parts = dateKey.split("-")
+  var tp = String(timeStr || "00:00").split(":")
+  return new Date(
+    parseInt(parts[0], 10),
+    parseInt(parts[1], 10) - 1,
+    parseInt(parts[2], 10),
+    parseInt(tp[0], 10) || 0,
+    parseInt(tp[1], 10) || 0,
+    0, 0
+  ).getTime()
+}
+
 function timeAgoCN(ts) {
   var diffMs = Date.now() - ts
   if (diffMs < 0) return "刚刚"
@@ -63,5 +93,8 @@ module.exports = {
   addDays: addDays,
   weekdayCN: weekdayCN,
   monthDayCN: monthDayCN,
-  timeAgoCN: timeAgoCN
+  timeAgoCN: timeAgoCN,
+  offsetToDateKey: offsetToDateKey,
+  dateKeyToOffset: dateKeyToOffset,
+  dateKeyToTs: dateKeyToTs
 }

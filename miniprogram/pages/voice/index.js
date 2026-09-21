@@ -1,7 +1,11 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
 var todayKey = dateUtils.todayKey
-var formatDateKey = dateUtils.formatDateKey
+var offsetToDateKey = dateUtils.offsetToDateKey
+var dateKeyToOffset = dateUtils.dateKeyToOffset
+var dateKeyToTs = dateUtils.dateKeyToTs
+var monthDayCN = dateUtils.monthDayCN
+var addDays = dateUtils.addDays
 var constants = require("../../utils/constants")
 var SOLID_PORTIONS = constants.SOLID_PORTIONS
 var MED_PRESETS = constants.MED_PRESETS
@@ -82,7 +86,7 @@ function parseText(text) {
 }
 
 /* ---- Date/time helpers ---- */
-function buildDateOffsets(selected) {
+function buildDateOffsets(selected, customMode) {
   var offsets = [
     { value: 0, label: "今天" },
     { value: -1, label: "昨天" },
@@ -90,7 +94,7 @@ function buildDateOffsets(selected) {
     { value: -3, label: "3天前" }
   ]
   return offsets.map(function (o) {
-    o.chipClass = o.value === selected ? "chip chip-active" : "chip"
+    o.chipClass = (!customMode && o.value === selected) ? "chip chip-active" : "chip"
     return o
   })
 }
@@ -102,14 +106,8 @@ function defaultTime() {
   return (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
 }
 
-function buildDateTime(offset, timeStr) {
-  var d = new Date()
-  if (offset) d.setDate(d.getDate() + offset)
-  if (timeStr) {
-    var parts = timeStr.split(":")
-    d.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0)
-  }
-  return { dateKey: formatDateKey(d), ts: d.getTime() }
+function buildDateTime(dateKey, timeStr) {
+  return { dateKey: dateKey, ts: dateKeyToTs(dateKey, timeStr) }
 }
 
 function describe(parsed) {
@@ -144,7 +142,7 @@ function formatRecognizedTime(parsed) {
   var datePart = ""
   if (typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays)) {
     var key = String(parsed.dateOffsetDays)
-    datePart = dateLabels[key] || ""
+    datePart = dateLabels[key] || monthDayCN(addDays(todayKey(), parsed.dateOffsetDays))
   }
 
   var timePart = ""
@@ -179,7 +177,12 @@ Page({
 
     // Custom time
     dateOffset: 0,
-    dateOffsets: buildDateOffsets(0),
+    dateOffsets: buildDateOffsets(0, false),
+    customDateMode: false,
+    customDateKey: todayKey(),
+    customDateLabel: "自定义",
+    customChipClass: "chip",
+    todayKey: todayKey(),
     customTime: defaultTime()
   },
 
@@ -331,8 +334,21 @@ Page({
           recognizedTimeText: formatRecognizedTime(parsed)
         }
         if (typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays)) {
-          syncData.dateOffset = parsed.dateOffsetDays
-          syncData.dateOffsets = buildDateOffsets(parsed.dateOffsetDays)
+          var off = parsed.dateOffsetDays
+          syncData.dateOffset = off
+          if (off === 0 || off === -1 || off === -2 || off === -3) {
+            syncData.dateOffsets = buildDateOffsets(off, false)
+            syncData.customDateMode = false
+            syncData.customChipClass = "chip"
+            syncData.customDateLabel = "自定义"
+          } else {
+            var customKey = offsetToDateKey(off)
+            syncData.dateOffsets = buildDateOffsets(off, true)
+            syncData.customDateMode = true
+            syncData.customDateKey = customKey
+            syncData.customDateLabel = monthDayCN(customKey)
+            syncData.customChipClass = "chip chip-active"
+          }
         }
         if (typeof parsed.hour === "number" && isFinite(parsed.hour)) {
           var h = parsed.hour
@@ -361,9 +377,39 @@ Page({
   },
 
   /* ---- Custom time ---- */
+  // Manual date pick overrides the NLP-parsed date so the visible
+  // selection is what gets saved (update parsed + recognizedTimeText).
   pickDateOffset: function (e) {
     var offset = parseInt(e.currentTarget.dataset.offset, 10)
-    this.setData({ dateOffset: offset, dateOffsets: buildDateOffsets(offset) })
+    var parsed = {}
+    for (var k in this.data.parsed) parsed[k] = this.data.parsed[k]
+    parsed.dateOffsetDays = offset
+    this.setData({
+      dateOffset: offset,
+      dateOffsets: buildDateOffsets(offset, false),
+      customDateMode: false,
+      customChipClass: "chip",
+      customDateLabel: "自定义",
+      customDateKey: todayKey(),
+      parsed: parsed,
+      recognizedTimeText: formatRecognizedTime(parsed)
+    })
+  },
+
+  onCustomDateChange: function (e) {
+    var dateKey = e.detail.value
+    var parsed = {}
+    for (var k in this.data.parsed) parsed[k] = this.data.parsed[k]
+    parsed.dateOffsetDays = dateKeyToOffset(dateKey)
+    this.setData({
+      customDateMode: true,
+      customDateKey: dateKey,
+      customDateLabel: monthDayCN(dateKey),
+      customChipClass: "chip chip-active",
+      dateOffsets: buildDateOffsets(this.data.dateOffset, true),
+      parsed: parsed,
+      recognizedTimeText: formatRecognizedTime(parsed)
+    })
   },
 
   onTimeChange: function (e) {
@@ -379,15 +425,18 @@ Page({
     }
 
     // NLP-extracted time takes priority, else use manual picker
-    var offset = (typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays))
-      ? parsed.dateOffsetDays : this.data.dateOffset
+    var hasParsedOffset = typeof parsed.dateOffsetDays === "number" && isFinite(parsed.dateOffsetDays)
+    var offset = hasParsedOffset ? parsed.dateOffsetDays : this.data.dateOffset
+    var dateKey = (!hasParsedOffset && this.data.customDateMode)
+      ? this.data.customDateKey
+      : offsetToDateKey(offset)
     var timeStr = this.data.customTime
     if (typeof parsed.hour === "number" && isFinite(parsed.hour)) {
       var h = parsed.hour
       var m = (typeof parsed.minute === "number" && isFinite(parsed.minute)) ? parsed.minute : 0
       timeStr = (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
     }
-    var dt = buildDateTime(offset, timeStr)
+    var dt = buildDateTime(dateKey, timeStr)
 
     var base = { dateKey: dt.dateKey, ts: dt.ts, note: parsed.note || "", source: "voice" }
     var payload = null

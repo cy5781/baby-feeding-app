@@ -1,8 +1,11 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
-var formatDateKey = dateUtils.formatDateKey
+var offsetToDateKey = dateUtils.offsetToDateKey
+var dateKeyToTs = dateUtils.dateKeyToTs
+var todayKey = dateUtils.todayKey
+var monthDayCN = dateUtils.monthDayCN
 
-function buildDateOffsets(selected) {
+function buildDateOffsets(selected, customMode) {
   var offsets = [
     { value: 0, label: "今天" },
     { value: -1, label: "昨天" },
@@ -10,7 +13,7 @@ function buildDateOffsets(selected) {
     { value: -3, label: "3天前" }
   ]
   return offsets.map(function (o) {
-    o.chipClass = o.value === selected ? "chip chip-active" : "chip"
+    o.chipClass = (!customMode && o.value === selected) ? "chip chip-active" : "chip"
     return o
   })
 }
@@ -22,14 +25,8 @@ function defaultTime() {
   return (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
 }
 
-function buildDateTime(offset, timeStr) {
-  var d = new Date()
-  if (offset) d.setDate(d.getDate() + offset)
-  if (timeStr) {
-    var parts = timeStr.split(":")
-    d.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0)
-  }
-  return { dateKey: formatDateKey(d), ts: d.getTime() }
+function buildDateTime(dateKey, timeStr) {
+  return { dateKey: dateKey, ts: dateKeyToTs(dateKey, timeStr) }
 }
 
 Page({
@@ -39,7 +36,12 @@ Page({
     imageUrl: "",
     uploading: false,
     dateOffset: 0,
-    dateOffsets: buildDateOffsets(0),
+    dateOffsets: buildDateOffsets(0, false),
+    customDateMode: false,
+    customDateKey: todayKey(),
+    customDateLabel: "自定义",
+    customChipClass: "chip",
+    todayKey: todayKey(),
     customTime: defaultTime(),
     note: ""
   },
@@ -95,7 +97,25 @@ Page({
   /* ---- Date/time ---- */
   pickDateOffset: function (e) {
     var offset = parseInt(e.currentTarget.dataset.offset, 10)
-    this.setData({ dateOffset: offset, dateOffsets: buildDateOffsets(offset) })
+    this.setData({
+      dateOffset: offset,
+      dateOffsets: buildDateOffsets(offset, false),
+      customDateMode: false,
+      customChipClass: "chip",
+      customDateLabel: "自定义",
+      customDateKey: todayKey()
+    })
+  },
+
+  onCustomDateChange: function (e) {
+    var dateKey = e.detail.value
+    this.setData({
+      customDateMode: true,
+      customDateKey: dateKey,
+      customDateLabel: monthDayCN(dateKey),
+      customChipClass: "chip chip-active",
+      dateOffsets: buildDateOffsets(this.data.dateOffset, true)
+    })
   },
 
   onTimeChange: function (e) {
@@ -112,7 +132,10 @@ Page({
       return
     }
 
-    var dt = buildDateTime(this.data.dateOffset, this.data.customTime)
+    var dateKey = this.data.customDateMode
+      ? this.data.customDateKey
+      : offsetToDateKey(this.data.dateOffset)
+    var dt = buildDateTime(dateKey, this.data.customTime)
     var that = this
     api.addEvent({
       type: "vaccine",

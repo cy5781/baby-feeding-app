@@ -1,6 +1,10 @@
 var api = require("../../services/api")
 var dateUtils = require("../../utils/date")
-var formatDateKey = dateUtils.formatDateKey
+var offsetToDateKey = dateUtils.offsetToDateKey
+var dateKeyToOffset = dateUtils.dateKeyToOffset
+var dateKeyToTs = dateUtils.dateKeyToTs
+var todayKey = dateUtils.todayKey
+var monthDayCN = dateUtils.monthDayCN
 var MILK_QUICK = require("../../utils/constants").MILK_QUICK
 
 var FEED_METHODS = [
@@ -28,7 +32,7 @@ function buildMethods(selected) {
   })
 }
 
-function buildDateOffsets(selected) {
+function buildDateOffsets(selected, customMode) {
   var offsets = [
     { value: 0, label: "今天" },
     { value: -1, label: "昨天" },
@@ -36,7 +40,7 @@ function buildDateOffsets(selected) {
     { value: -3, label: "3天前" }
   ]
   return offsets.map(function (o) {
-    o.chipClass = o.value === selected ? "chip chip-active" : "chip"
+    o.chipClass = (!customMode && o.value === selected) ? "chip chip-active" : "chip"
     return o
   })
 }
@@ -48,30 +52,8 @@ function defaultTime() {
   return (h < 10 ? "0" + h : "" + h) + ":" + (m < 10 ? "0" + m : "" + m)
 }
 
-function buildDateTime(offset, timeStr) {
-  var d = new Date()
-  if (offset) d.setDate(d.getDate() + offset)
-  if (timeStr) {
-    var parts = timeStr.split(":")
-    d.setHours(parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0)
-  }
-  return { dateKey: formatDateKey(d), ts: d.getTime() }
-}
-
-function computeDateOffset(dateKey) {
-  var d = new Date()
-  var today = formatDateKey(d)
-  d.setDate(d.getDate() - 1)
-  var yesterday = formatDateKey(d)
-  d.setDate(d.getDate() - 1)
-  var day2 = formatDateKey(d)
-  d.setDate(d.getDate() - 1)
-  var day3 = formatDateKey(d)
-  if (dateKey === today) return 0
-  if (dateKey === yesterday) return -1
-  if (dateKey === day2) return -2
-  if (dateKey === day3) return -3
-  return 0
+function buildDateTime(dateKey, timeStr) {
+  return { dateKey: dateKey, ts: dateKeyToTs(dateKey, timeStr) }
 }
 
 function timeFromTs(ts) {
@@ -89,7 +71,12 @@ Page({
     note: "",
     quick: buildQuick(130),
     dateOffset: 0,
-    dateOffsets: buildDateOffsets(0),
+    dateOffsets: buildDateOffsets(0, false),
+    customDateMode: false,
+    customDateKey: todayKey(),
+    customDateLabel: "自定义",
+    customChipClass: "chip",
+    todayKey: todayKey(),
     customTime: defaultTime(),
     editId: ""
   },
@@ -102,20 +89,30 @@ Page({
     var note = decodeURIComponent(options.note || "")
     var dateKey = options.dateKey || ""
     var ts = parseInt(options.ts, 10) || 0
-    var offset = computeDateOffset(dateKey)
+    var offset = dateKey ? dateKeyToOffset(dateKey) : 0
     var timeStr = ts ? timeFromTs(ts) : defaultTime()
 
-    this.setData({
+    var editData = {
       editId: editId,
       amount: amount,
       feedMethod: feedMethod,
       methods: buildMethods(feedMethod),
       quick: buildQuick(amount),
       note: note,
-      dateOffset: offset,
-      dateOffsets: buildDateOffsets(offset),
       customTime: timeStr
-    })
+    }
+    if (offset === 0 || offset === -1 || offset === -2 || offset === -3) {
+      editData.dateOffset = offset
+      editData.dateOffsets = buildDateOffsets(offset, false)
+    } else {
+      editData.dateOffset = offset
+      editData.dateOffsets = buildDateOffsets(offset, true)
+      editData.customDateMode = true
+      editData.customDateKey = dateKey
+      editData.customDateLabel = monthDayCN(dateKey)
+      editData.customChipClass = "chip chip-active"
+    }
+    this.setData(editData)
   },
 
   step: function (e) {
@@ -145,7 +142,25 @@ Page({
 
   pickDateOffset: function (e) {
     var offset = parseInt(e.currentTarget.dataset.offset, 10)
-    this.setData({ dateOffset: offset, dateOffsets: buildDateOffsets(offset) })
+    this.setData({
+      dateOffset: offset,
+      dateOffsets: buildDateOffsets(offset, false),
+      customDateMode: false,
+      customChipClass: "chip",
+      customDateLabel: "自定义",
+      customDateKey: todayKey()
+    })
+  },
+
+  onCustomDateChange: function (e) {
+    var dateKey = e.detail.value
+    this.setData({
+      customDateMode: true,
+      customDateKey: dateKey,
+      customDateLabel: monthDayCN(dateKey),
+      customChipClass: "chip chip-active",
+      dateOffsets: buildDateOffsets(this.data.dateOffset, true)
+    })
   },
 
   onTimeChange: function (e) {
@@ -158,7 +173,10 @@ Page({
       wx.showToast({ title: "请选择奶量", icon: "none" })
       return
     }
-    var dt = buildDateTime(this.data.dateOffset, this.data.customTime)
+    var dateKey = this.data.customDateMode
+      ? this.data.customDateKey
+      : offsetToDateKey(this.data.dateOffset)
+    var dt = buildDateTime(dateKey, this.data.customTime)
     var payload = {
       type: "milk",
       dateKey: dt.dateKey,

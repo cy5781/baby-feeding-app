@@ -77,6 +77,9 @@
         data-offset="{{item.value}}"
         bindtap="pickDateOffset"
       >{{item.label}}</text>
+      <picker mode="date" value="{{customDateKey}}" end="{{todayKey}}" bindchange="onCustomDateChange">
+        <text class="{{customChipClass}}">{{customDateLabel}}</text>
+      </picker>
     </view>
     <picker mode="time" value="{{customTime}}" bindchange="onTimeChange">
       <view class="time-picker-btn">{{customTime}}</view>
