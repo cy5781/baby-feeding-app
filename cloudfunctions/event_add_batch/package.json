@@ -1,0 +1,9 @@
+{
+  "name": "event_add_batch",
+  "version": "1.0.0",
+  "description": "Batch insert events from photo import",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}
