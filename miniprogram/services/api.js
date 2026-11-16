@@ -77,5 +77,13 @@ module.exports = {
     })
   },
   clearAll: function () { return call("event_clear_all", {}) },
-  nlpParse: function (text) { return call("nlp_parse", { text: text }) }
+  nlpParse: function (text) { return call("nlp_parse", { text: text }) },
+  photoParse: function (fileID, todayKey) {
+    return call("photo_parse", { fileID: fileID, todayKey: todayKey })
+  },
+  addEventsBatch: function (events) {
+    return ensureFamily().then(function () {
+      return call("event_add_batch", { events: events })
+    })
+  }
 }
