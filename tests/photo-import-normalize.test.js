@@ -128,6 +128,13 @@ test("system prompt carries today and item cap", function () {
   assert.ok(p.indexOf("最多 30 条") !== -1)
 })
 
+test("only photo-import upload paths are accepted", function () {
+  assert.strictEqual(n.isPhotoUploadPath("cloud://env.abc/photo-import/123.jpg"), true)
+  assert.strictEqual(n.isPhotoUploadPath("cloud://env.abc/vaccine/123.jpg"), false)
+  assert.strictEqual(n.isPhotoUploadPath(""), false)
+  assert.strictEqual(n.isPhotoUploadPath(null), false)
+})
+
 var failed = 0
 for (var i = 0; i < cases.length; i++) {
   try {

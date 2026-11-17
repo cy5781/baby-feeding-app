@@ -217,6 +217,7 @@ Page({
   },
 
   onTimeChange: function (e) {
+    if (this.data.saving) return
     var index = parseInt(e.currentTarget.dataset.index, 10)
     var time = e.detail.value
     var items = this.data.items.slice()
@@ -232,6 +233,7 @@ Page({
   },
 
   onDefaultDateChange: function (e) {
+    if (this.data.saving) return
     var dateKey = e.detail.value
     var items = this.data.items.slice()
     for (var i = 0; i < items.length; i++) {
@@ -245,6 +247,7 @@ Page({
   },
 
   toggleItem: function (e) {
+    if (this.data.saving) return
     var index = parseInt(e.currentTarget.dataset.index, 10)
     var items = this.data.items.slice()
     if (isNaN(index) || !items[index]) return
@@ -273,6 +276,7 @@ Page({
   },
 
   retake: function () {
+    if (this.data.saving) return
     this.stopStageTimer()
     this.cleanupPhoto()
     this.setData({
@@ -305,8 +309,12 @@ Page({
     if (this.data.saving) return
 
     var selected = []
+    var selectedIndexes = []
     for (var i = 0; i < this.data.items.length; i++) {
-      if (this.data.items[i].checked) selected.push(this.data.items[i])
+      if (this.data.items[i].checked) {
+        selected.push(this.data.items[i])
+        selectedIndexes.push(i)
+      }
     }
     if (!selected.length) {
       wx.showToast({ title: "请至少选择一条", icon: "none" })
@@ -323,7 +331,7 @@ Page({
 
     api.addEventsBatch(payloads).then(function (res) {
       var saved = (res && res.saved) || 0
-      var failed = res && res.failed ? res.failed.length : 0
+      var failedList = (res && res.failed) ? res.failed : []
       if (saved === 0) {
         that.setData({
           saving: false,
@@ -332,11 +340,24 @@ Page({
         wx.showToast({ title: "保存失败，请重试", icon: "none" })
         return
       }
-      if (failed > 0) {
-        wx.showToast({ title: "已保存 " + saved + " 条，" + failed + " 条未保存", icon: "none" })
-      } else {
-        wx.showToast({ title: "已保存 " + saved + " 条", icon: "success" })
+      if (failedList.length > 0) {
+        var failedIndexes = []
+        for (var k = 0; k < failedList.length; k++) {
+          failedIndexes.push(failedList[k].index)
+        }
+        var items = helpers.applySaveResult(that.data.items, selectedIndexes, failedIndexes)
+        var count = helpers.countChecked(items)
+        that.setData({
+          saving: false,
+          items: items,
+          checkedCount: count,
+          saveButtonText: count > 0 ? "保存 " + count + " 条记录" : "保存记录",
+          saveDisabled: count === 0
+        })
+        wx.showToast({ title: "已保存 " + saved + " 条，" + failedList.length + " 条未保存", icon: "none" })
+        return
       }
+      wx.showToast({ title: "已保存 " + saved + " 条", icon: "success" })
       that.cleanupPhoto()
       setTimeout(function () {
         wx.navigateBack()

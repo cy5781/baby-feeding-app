@@ -216,6 +216,8 @@ Each has `index.js` + `package.json` (dep: `wx-server-sdk@latest`). All follow p
 | `photo_parse` | Tencent Cloud `GeneralHandwritingOCR` → DeepSeek multi-record extraction → server-side normalization (max 30, dedupe, date/time validation) |
 | `event_add_batch` | Batch insert up to 30 events with per-item validation; sets `source: "photo"`; returns saved ids and failed indexes |
 
+Deployment note: set both `photo_parse` and `event_add_batch` timeout to 20 seconds in the Cloud Development console; `photo_parse` also requires the Tencent Cloud OCR service to be enabled.
+
 ### Data Model
 
 Three collections in cloud DB:

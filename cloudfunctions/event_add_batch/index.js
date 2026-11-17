@@ -1,5 +1,6 @@
 const cloud = require("wx-server-sdk")
 const validate = require("./validate")
+const runBatch = require("./run_batch").runBatch
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
@@ -18,27 +19,13 @@ exports.main = async (event) => {
   if (events.length > 30) throw new Error("too_many_events")
 
   const familyId = await requireFamilyId()
-  const ids = []
-  const failed = []
 
-  for (let i = 0; i < events.length; i++) {
-    const result = validate.validateEvent(events[i])
-    if (!result.ok) {
-      failed.push({ index: i, reason: result.reason })
-      continue
+  return runBatch(events, {
+    validate: validate.validateEvent,
+    familyId: familyId,
+    createdAt: function () { return db.serverDate() },
+    add: function (data) {
+      return db.collection("events").add({ data: data })
     }
-    const data = Object.assign({}, result.data, {
-      familyId: familyId,
-      source: "photo",
-      createdAt: db.serverDate()
-    })
-    try {
-      const res = await db.collection("events").add({ data: data })
-      ids.push(res._id)
-    } catch (e) {
-      failed.push({ index: i, reason: "db_error" })
-    }
-  }
-
-  return { saved: ids.length, ids: ids, failed: failed }
+  })
 }

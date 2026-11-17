@@ -1,5 +1,6 @@
 var assert = require("assert")
 var v = require("../cloudfunctions/event_add_batch/validate")
+var rb = require("../cloudfunctions/event_add_batch/run_batch")
 
 var cases = []
 function test(name, fn) { cases.push({ name: name, fn: fn }) }
@@ -64,19 +65,68 @@ test("vaccine defaults subType when missing", function () {
   assert.strictEqual(okRes.data.subType, "百白破")
 })
 
-var failed = 0
-for (var i = 0; i < cases.length; i++) {
-  try {
-    cases[i].fn()
-    console.log("PASS " + cases[i].name)
-  } catch (e) {
-    failed++
-    console.error("FAIL " + cases[i].name)
-    console.error(e && e.stack ? e.stack : e)
+test("batch runs valid events and reports per-item failures", function () {
+  var added = []
+  var deps = {
+    validate: function (evt) {
+      if (evt.type === "bad") return { ok: false, reason: "type_not_supported" }
+      return { ok: true, data: { type: evt.type, dateKey: evt.dateKey, ts: evt.ts, note: "" } }
+    },
+    familyId: "fam1",
+    createdAt: function () { return "SERVER_DATE" },
+    add: function (data) {
+      added.push(data)
+      if (data.type === "boom") return Promise.reject(new Error("db"))
+      return Promise.resolve({ _id: "id-" + data.type })
+    }
   }
+  return rb.runBatch([
+    { type: "milk", dateKey: "2026-11-16", ts: 1 },
+    { type: "bad", dateKey: "2026-11-16", ts: 2 },
+    { type: "boom", dateKey: "2026-11-16", ts: 3 },
+    { type: "poop", dateKey: "2026-11-16", ts: 4 }
+  ], deps).then(function (res) {
+    assert.strictEqual(res.saved, 2)
+    assert.deepStrictEqual(res.ids, ["id-milk", "id-poop"])
+    assert.deepStrictEqual(res.failed, [
+      { index: 1, reason: "type_not_supported" },
+      { index: 2, reason: "db_error" }
+    ])
+    assert.strictEqual(added.length, 3)
+    assert.strictEqual(added[0].familyId, "fam1")
+    assert.strictEqual(added[0].source, "photo")
+    assert.strictEqual(added[0].createdAt, "SERVER_DATE")
+  })
+})
+
+var failed = 0
+var pending = []
+for (var i = 0; i < cases.length; i++) {
+  (function (name, fn) {
+    try {
+      var r = fn()
+      if (r && typeof r.then === "function") {
+        pending.push(r.then(function () {
+          console.log("PASS " + name)
+        }).catch(function (e) {
+          failed++
+          console.error("FAIL " + name)
+          console.error(e && e.stack ? e.stack : e)
+        }))
+      } else {
+        console.log("PASS " + name)
+      }
+    } catch (e) {
+      failed++
+      console.error("FAIL " + name)
+      console.error(e && e.stack ? e.stack : e)
+    }
+  })(cases[i].name, cases[i].fn)
 }
-if (failed > 0) {
-  console.error(failed + " test(s) failed")
-  process.exit(1)
-}
-console.log("ALL PASS (" + cases.length + ")")
+Promise.all(pending).then(function () {
+  if (failed > 0) {
+    console.error(failed + " test(s) failed")
+    process.exit(1)
+  }
+  console.log("ALL PASS (" + cases.length + ")")
+})

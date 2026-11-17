@@ -34,6 +34,10 @@ function isValidTime(s) {
   return TIME_RE.test(s)
 }
 
+function isPhotoUploadPath(fileID) {
+  return trimStr(fileID).indexOf("photo-import/") !== -1
+}
+
 function normFeedMethod(v) {
   var s = trimStr(v)
   if (s === "母乳" || s === "混合" || s === "奶粉") return s
@@ -247,5 +251,6 @@ function buildSystemPrompt(todayKey) {
 module.exports = {
   normalizeParsed: normalizeParsed,
   ocrTextFromResponse: ocrTextFromResponse,
-  buildSystemPrompt: buildSystemPrompt
+  buildSystemPrompt: buildSystemPrompt,
+  isPhotoUploadPath: isPhotoUploadPath
 }

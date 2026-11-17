@@ -28,7 +28,7 @@
 }
 
 .pi-capture-hint {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #7E9078;
   margin-bottom: 28rpx;
 }
@@ -58,10 +58,11 @@
 
 .pi-btn-secondary {
   flex: 1;
+  min-height: 88rpx;
   background: #ffffff;
   border: 2rpx solid #4F9668;
   color: #2C6B40;
-  padding: 20rpx 16rpx;
+  padding: 26rpx 16rpx;
   font-size: 30rpx;
 }
 
@@ -76,7 +77,7 @@
 }
 
 .pi-result-hint {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #7E9078;
   margin-top: 6rpx;
 }
@@ -96,18 +97,25 @@
   color: #33422E;
 }
 
+.pi-date-picker {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .pi-date-value {
   font-size: 30rpx;
   color: #4F9668;
   font-weight: 800;
-  padding: 8rpx 12rpx;
+  padding: 12rpx 16rpx;
   border-radius: 12rpx;
   background: #DCEFDA;
 }
 
 .pi-date-hint {
   width: 100%;
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #7E9078;
   margin-top: 10rpx;
 }
@@ -182,8 +190,14 @@
 }
 
 .pi-item-date {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #7E9078;
+}
+
+.pi-time-picker {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
 }
 
 .pi-time {
@@ -208,6 +222,10 @@
 }
 
 .pi-raw-toggle {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 28rpx;
   color: #7E9078;
   font-weight: 700;
@@ -216,7 +234,7 @@
 
 .pi-raw-text {
   margin-top: 16rpx;
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #33422E;
   white-space: pre-wrap;
   word-break: break-all;

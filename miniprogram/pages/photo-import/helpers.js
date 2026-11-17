@@ -92,6 +92,31 @@ function countChecked(items) {
   return n
 }
 
+function applySaveResult(items, selectedIndexes, failedIndexes) {
+  var selectedPos = {}
+  for (var i = 0; i < selectedIndexes.length; i++) {
+    selectedPos[selectedIndexes[i]] = i
+  }
+  var failedPos = {}
+  for (var j = 0; j < failedIndexes.length; j++) {
+    failedPos[failedIndexes[j]] = true
+  }
+
+  var out = []
+  for (var k = 0; k < items.length; k++) {
+    var copy = {}
+    for (var key in items[k]) copy[key] = items[k][key]
+    var pos = Object.prototype.hasOwnProperty.call(selectedPos, k) ? selectedPos[k] : -1
+    var checked = pos !== -1 && !!failedPos[pos]
+    copy.checked = checked
+    copy.checkClass = checkClass(checked)
+    copy.checkMark = checked ? "✓" : ""
+    copy.cardClass = checked ? "pi-item" : "pi-item pi-item-off"
+    out.push(copy)
+  }
+  return out
+}
+
 function buildPayload(item) {
   var raw = item.raw || {}
   var note = String(raw.note || "").trim()
@@ -133,6 +158,9 @@ function buildPayload(item) {
 
 function photoErrorMessage(text) {
   text = String(text || "")
+  if (text.indexOf("bad_fileID") !== -1) {
+    return "照片来源无效，请重新拍照"
+  }
   if (text.indexOf("ocr_credentials_missing") !== -1) {
     return "文字识别服务未配置，请联系管理员检查腾讯云密钥"
   }
@@ -171,6 +199,7 @@ module.exports = {
   buildDisplayItems: buildDisplayItems,
   applyDefaultDate: applyDefaultDate,
   countChecked: countChecked,
+  applySaveResult: applySaveResult,
   buildPayload: buildPayload,
   photoErrorMessage: photoErrorMessage
 }

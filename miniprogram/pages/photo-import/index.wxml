@@ -25,6 +25,12 @@
     <view class="pi-error-text">{{errorText}}</view>
   </view>
 
+  <!-- OCR raw text (visible for both success and no_items error states) -->
+  <view wx:if="{{rawText}}" class="pi-raw">
+    <view class="pi-raw-toggle" bindtap="toggleRaw">{{rawToggleText}}</view>
+    <view wx:if="{{showRaw}}" class="pi-raw-text">{{rawText}}</view>
+  </view>
+
   <!-- Result -->
   <view wx:if="{{showResult}}">
     <view class="pi-result-head">
@@ -35,7 +41,9 @@
     <view class="card pi-date-card">
       <view class="pi-date-label">记录日期</view>
       <picker mode="date" value="{{defaultDateKey}}" end="{{todayKey}}" bindchange="onDefaultDateChange">
-        <view class="pi-date-value">{{defaultDateLabel}} ›</view>
+        <view class="pi-date-picker">
+          <view class="pi-date-value">{{defaultDateLabel}} ›</view>
+        </view>
       </picker>
       <view class="pi-date-hint">本子上写了日期的记录会优先使用自己的日期</view>
     </view>
@@ -50,16 +58,13 @@
           <view class="pi-item-meta">
             <text wx:if="{{item.showDate}}" class="pi-item-date">{{item.dateLabel}}</text>
             <picker mode="time" value="{{item.timePickerValue}}" data-index="{{index}}" bindchange="onTimeChange">
-              <text class="{{item.timeClass}}">{{item.timeLabel}}</text>
+              <view class="pi-time-picker">
+                <text class="{{item.timeClass}}">{{item.timeLabel}}</text>
+              </view>
             </picker>
           </view>
         </view>
       </view>
-    </view>
-
-    <view wx:if="{{rawText}}" class="pi-raw">
-      <view class="pi-raw-toggle" bindtap="toggleRaw">{{rawToggleText}}</view>
-      <view wx:if="{{showRaw}}" class="pi-raw-text">{{rawText}}</view>
     </view>
 
     <button class="btn btn-primary pi-save-btn" bindtap="save" disabled="{{saveDisabled}}">{{saveButtonText}}</button>

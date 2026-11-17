@@ -2306,7 +2306,7 @@ Expected: 5 feature commits plus the spec commit; working tree clean.
 
 1. 部署 `photo_parse` 和 `event_add_batch` 云函数。
 2. 腾讯云控制台开通「文字识别 OCR」，确认账号有 OCR 权限；环境变量沿用现有 `TENCENT_SECRET_ID` / `TENCENT_SECRET_KEY` / `DEEPSEEK_API_KEY`。
-3. 云开发控制台把 `photo_parse` 超时时间调到 20 秒。
+3. 云开发控制台把 `photo_parse` 和 `event_add_batch` 超时时间都调到 20 秒。
 4. 开发者工具/真机拍一张手写喂养记录本：
    - 应看到上传 → 识别 → 整理 → 确认列表。
    - 取消勾选一条后保存，首页时间线不应出现该条。

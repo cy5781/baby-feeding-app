@@ -83,6 +83,40 @@ test("date label uses 今天 for today", function () {
   assert.strictEqual(h.dateLabel("2026-11-15", "2026-11-16"), "11月15日")
 })
 
+test("partial save leaves only failed submitted items checked", function () {
+  var items = h.buildDisplayItems([
+    { type: "milk", milkAmount: 100, dateKey: "2026-11-16", hasOwnDate: false, time: "08:00", timeMissing: false },
+    { type: "poop", poopType: "正常", poopColor: "黄", poopAmount: "", dateKey: "2026-11-16", hasOwnDate: false, time: "09:00", timeMissing: false },
+    { type: "sleep", sleepEvent: "入睡", dateKey: "2026-11-16", hasOwnDate: false, time: "10:00", timeMissing: false }
+  ], "2026-11-16")
+  var after = h.applySaveResult(items, [0, 1, 2], [1])
+  assert.strictEqual(after[0].checked, false)
+  assert.strictEqual(after[1].checked, true)
+  assert.strictEqual(after[2].checked, false)
+  assert.strictEqual(after[0].checkMark, "")
+  assert.strictEqual(after[1].checkMark, "✓")
+  assert.strictEqual(after[0].cardClass, "pi-item pi-item-off")
+  assert.strictEqual(h.countChecked(after), 1)
+})
+
+test("partial save does not re-check items the user had unchecked", function () {
+  var items = h.buildDisplayItems([
+    { type: "milk", milkAmount: 100, dateKey: "2026-11-16", hasOwnDate: false, time: "08:00", timeMissing: false },
+    { type: "milk", milkAmount: 120, dateKey: "2026-11-16", hasOwnDate: false, time: "09:00", timeMissing: false }
+  ], "2026-11-16")
+  items[0].checked = false
+  items[0].checkClass = h.checkClass(false)
+  items[0].checkMark = ""
+  var after = h.applySaveResult(items, [1], [0])
+  assert.strictEqual(after[0].checked, false)
+  assert.strictEqual(after[1].checked, true)
+  assert.strictEqual(h.countChecked(after), 1)
+})
+
+test("invalid photo source maps to actionable copy", function () {
+  assert.ok(h.photoErrorMessage("bad_fileID").indexOf("重新拍照") !== -1)
+})
+
 var failed = 0
 for (var i = 0; i < cases.length; i++) {
   try {

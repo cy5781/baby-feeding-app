@@ -117,7 +117,7 @@ D3 一滴
 
 流程：
 
-1. 校验 `fileID`、`todayKey`。
+1. 校验 `fileID`、`todayKey`、`OPENID`，并要求 `fileID` 路径包含 `photo-import/`（只接受本功能上传的照片）。
 2. `cloud.getTempFileURL` 获取图片临时地址。
 3. 调用腾讯云 OCR：
    - 域名 `ocr.tencentcloudapi.com`
@@ -306,8 +306,8 @@ System prompt 要点（放在云函数里，不暴露给前端）：
 - `save`：
   - 只提交勾选项，按 `dateKey + time` 计算 `ts`（`dateKeyToTs`）。
   - `timeMissing` 为 true 时，`note` 追加「时间未识别，按12:00记录」。
-  - 调 `api.addEventsBatch(events)`；成功后 toast「已保存 N 条」，删除临时照片，`navigateBack`。
-  - 若 `failed` 非空，toast「已保存 N 条，M 条未保存」。
+  - 调 `api.addEventsBatch(events)`；全部成功时 toast「已保存 N 条」，删除临时照片，`navigateBack`。
+  - 若 `failed` 非空：toast「已保存 N 条，M 条未保存」，**留在当前页**，只保留未保存项勾选，照片保留，方便重试。
 - `onUnload`：若照片尚未删除，best-effort `wx.cloud.deleteFile`。
 
 ### 6.3 视觉规范
@@ -354,7 +354,7 @@ addEventsBatch: function (events) {
    - `TENCENT_SECRET_ID`
    - `TENCENT_SECRET_KEY`
    - `DEEPSEEK_API_KEY`
-3. 在云开发控制台把 `photo_parse` 的**超时时间调到 20 秒**（OCR + LLM 串行，默认 3 秒不够）。
+3. 在云开发控制台把 `photo_parse` 和 `event_add_batch` 的**超时时间都调到 20 秒**（OCR + LLM 串行，批量最多 30 条写入；默认 3 秒不够）。
 4. 部署 `photo_parse`、`event_add_batch` 两个云函数。
 5. 云存储无需新增权限配置；照片由当前用户上传与删除。
 
@@ -371,7 +371,10 @@ addEventsBatch: function (events) {
   - 未来日期 → 回退到默认日期
   - 重复行 → 去重
   - 超过 30 条 → 截断
-- 测试脚本放在 `tests/photo-import-normalize.test.js`，不放进云函数目录（避免随函数部署）。
+- `tests/photo-import-helpers.test.js` 覆盖确认页显示、部分保存后的勾选状态、错误文案。
+- `tests/photo-import-event-batch.test.js` 覆盖逐条校验。
+- `tests/photo-import-ui-structure.test.js` 静态检查原文折叠区位置、88rpx 触控区和字号下限。
+- 测试脚本放在 `tests/` 目录，不放进云函数目录（避免随函数部署）。
 
 ### 9.2 手动验收（需要用户执行）
 

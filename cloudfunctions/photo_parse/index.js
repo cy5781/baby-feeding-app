@@ -137,6 +137,10 @@ exports.main = async (event) => {
   if (!fileID) throw new Error("missing_fileID")
   if (!/^\d{4}-\d{2}-\d{2}$/.test(todayKey)) throw new Error("missing_todayKey")
 
+  const { OPENID } = cloud.getWXContext()
+  if (!OPENID) throw new Error("login_required")
+  if (!normalize.isPhotoUploadPath(fileID)) throw new Error("bad_fileID")
+
   const secretId = process.env.TENCENT_SECRET_ID
   const secretKey = process.env.TENCENT_SECRET_KEY
   if (!secretId || !secretKey) throw new Error("ocr_credentials_missing")
