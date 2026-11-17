@@ -90,6 +90,32 @@
   display: block;
 }
 
+.photo-import-btn {
+  width: 100%;
+  margin-bottom: 32rpx;
+  background: #ffffff;
+  border: 2rpx solid #4F9668;
+  border-radius: 28rpx;
+  color: #2C6B40;
+  font-size: 32rpx;
+  font-weight: 800;
+  padding: 26rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  line-height: 1.2;
+}
+
+.photo-import-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.photo-import-icon {
+  font-size: 36rpx;
+}
+
 .quick-feed {
   background: #FBEBD2;
   color: #8A5A16;

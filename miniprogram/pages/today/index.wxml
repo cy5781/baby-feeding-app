@@ -50,6 +50,11 @@
     </button>
   </view>
 
+  <button class="photo-import-btn" bindtap="goPhotoImport">
+    <text class="photo-import-icon">📷</text>
+    <text>拍照识别记录本</text>
+  </button>
+
   <!-- Today summary -->
   <view class="card" style="margin-bottom: 32rpx;">
     <view style="font-size: 28rpx; font-weight: 700; color: #7E9078; margin-bottom: 16rpx;">今日汇总</view>

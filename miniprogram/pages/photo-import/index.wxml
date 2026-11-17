@@ -1,0 +1,74 @@
+<view class="container">
+
+  <!-- Capture / preview card -->
+  <view class="card pi-photo-card">
+    <view wx:if="{{showCapture}}" class="pi-capture" bindtap="choosePhoto">
+      <view class="pi-capture-icon">📷</view>
+      <view class="pi-capture-title">拍照识别记录本</view>
+      <view class="pi-capture-hint">把本子平铺，光线均匀，尽量拍全一页</view>
+      <button class="btn btn-primary pi-capture-btn" catchtap="choosePhoto">拍照 / 从相册选择</button>
+    </view>
+
+    <block wx:if="{{showPreview}}">
+      <image class="pi-preview" src="{{imagePath}}" mode="widthFix"></image>
+      <view wx:if="{{stageText}}" class="pi-stage">{{stageText}}</view>
+      <view class="pi-photo-actions">
+        <button class="btn pi-btn-secondary" bindtap="retake">重新拍照</button>
+        <button wx:if="{{showRetry}}" class="btn pi-btn-secondary" bindtap="retryParse">重试识别</button>
+      </view>
+    </block>
+  </view>
+
+  <!-- Error -->
+  <view wx:if="{{showError}}" class="card pi-error-card">
+    <view class="pi-error-icon">😕</view>
+    <view class="pi-error-text">{{errorText}}</view>
+  </view>
+
+  <!-- OCR raw text (visible for both success and no_items error states) -->
+  <view wx:if="{{rawText}}" class="pi-raw">
+    <view class="pi-raw-toggle" bindtap="toggleRaw">{{rawToggleText}}</view>
+    <view wx:if="{{showRaw}}" class="pi-raw-text">{{rawText}}</view>
+  </view>
+
+  <!-- Result -->
+  <view wx:if="{{showResult}}">
+    <view class="pi-result-head">
+      <view class="pi-result-title">识别到 {{items.length}} 条记录</view>
+      <view class="pi-result-hint">核对一下，取消勾选的不会保存</view>
+    </view>
+
+    <view class="card pi-date-card">
+      <view class="pi-date-label">记录日期</view>
+      <picker mode="date" value="{{defaultDateKey}}" end="{{todayKey}}" bindchange="onDefaultDateChange">
+        <view class="pi-date-picker">
+          <view class="pi-date-value">{{defaultDateLabel}} ›</view>
+        </view>
+      </picker>
+      <view class="pi-date-hint">本子上写了日期的记录会优先使用自己的日期</view>
+    </view>
+
+    <view class="pi-list">
+      <view wx:for="{{items}}" wx:key="index" class="{{item.cardClass}}">
+        <view class="pi-check-hit" data-index="{{index}}" bindtap="toggleItem">
+          <view class="{{item.checkClass}}">{{item.checkMark}}</view>
+        </view>
+        <view class="pi-item-body">
+          <view class="pi-item-desc">{{item.icon}} {{item.desc}}</view>
+          <view class="pi-item-meta">
+            <text wx:if="{{item.showDate}}" class="pi-item-date">{{item.dateLabel}}</text>
+            <picker mode="time" value="{{item.timePickerValue}}" data-index="{{index}}" bindchange="onTimeChange">
+              <view class="pi-time-picker">
+                <text class="{{item.timeClass}}">{{item.timeLabel}}</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn btn-primary pi-save-btn" bindtap="save" disabled="{{saveDisabled}}">{{saveButtonText}}</button>
+    <view class="pi-bottom-space"></view>
+  </view>
+
+</view>

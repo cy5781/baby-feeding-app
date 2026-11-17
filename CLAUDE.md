@@ -195,6 +195,7 @@ API keys (DeepSeek, etc.) go in Cloud Development Console → Environment → En
 | `pages/entry-med/` | Medicine entry with AD/D3/DHA/Ca presets + note |
 | `pages/entry-poop/` | Poop entry with type/color chips + note |
 | `pages/voice/` | Text NLP entry: type → DeepSeek parse → confirm card → save; fallback local regex parser; voice recording stub |
+| `pages/photo-import/` | Photo import: capture notebook page → Tencent handwriting OCR → multi-record confirmation (check/time/date) → batch save; deletes temp photo |
 
 ### Cloud Functions (`cloudfunctions/`)
 
@@ -212,6 +213,10 @@ Each has `index.js` + `package.json` (dep: `wx-server-sdk@latest`). All follow p
 | `summary_daily` | Aggregate: milk count/total, solid count, poop count, med checkmarks, lastMilk |
 | `stats_range` | N-day (max 90) summary rows |
 | `nlp_parse` | Call DeepSeek API (`deepseek-v4-flash`, `response_format: json_object`) to parse Chinese feeding description into structured JSON |
+| `photo_parse` | Tencent Cloud `GeneralHandwritingOCR` → DeepSeek multi-record extraction → server-side normalization (max 30, dedupe, date/time validation) |
+| `event_add_batch` | Batch insert up to 30 events with per-item validation; sets `source: "photo"`; returns saved ids and failed indexes |
+
+Deployment note: set both `photo_parse` and `event_add_batch` timeout to 20 seconds in the Cloud Development console; `photo_parse` also requires the Tencent Cloud OCR service to be enabled.
 
 ### Data Model
 
